@@ -69,8 +69,8 @@ const BookProperty = () => {
     <div className="relative w-full min-h-screen">
       <header className="shadow-md p-5 flex items-center bg-white">
         <Link to="/" className="flex items-center text-gray-800">
-          <img src="/logo.svg" alt="RentifyProperties Logo" className="w-10 h-10 mr-2" />
-          <span className="text-xl font-semibold">RentifyProperties</span>
+          <img src="/logo.svg" alt="Rentify Properties Logo" className="w-10 h-10 mr-2" />
+          <span className="text-xl font-semibold">Rentify Properties</span>
         </Link>
       </header>
 

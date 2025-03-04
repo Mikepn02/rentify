@@ -1,24 +1,24 @@
-import React from "react";
+import { MantineProvider } from "@mantine/core";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { RecoilRoot } from "recoil";
+import DashboardLayout from "./components/layouts/DashboardLayout";
 import MainLayout from "./components/layouts/MainLayout";
+import { dummyAgents, dummyProperties, dummyServices } from "./constants";
+import Login from "./pages/auth/Login";
+import SignUp from "./pages/auth/SignUp";
+import DashboardAgent from "./pages/dashboard/Agents";
+import Bookings from "./pages/dashboard/Bookings";
+import Overview from "./pages/dashboard/Overview";
+import Properties from "./pages/dashboard/Properties";
+import About from "./pages/root/About";
+import AgentPage from "./pages/root/Agents";
+import BookProperty from "./pages/root/BookProperty";
+import Contact from "./pages/root/ContactUs";
 import Home from "./pages/root/Home";
 import NotFound from "./pages/root/NotFound";
-import PropertyList from "./pages/root/PropertyList";
-import { dummyAgents, dummyProperties, dummyServices } from "./constants";
 import PropertyDetail from "./pages/root/PropertyDetail";
-import BookProperty from "./pages/root/BookProperty";
-import About from "./pages/root/About";
+import PropertyList from "./pages/root/PropertyList";
 import Service from "./pages/root/Service";
-import AgentPage from "./pages/root/Agents";
-import Contact from "./pages/root/ContactUs";
-import SignUp from "./pages/auth/SignUp";
-import Login from "./pages/auth/Login";
-import DashboardLayout from "./components/layouts/DashboardLayout";
-import Overview from "./pages/dashboard/Overview";
-import { MantineProvider } from "@mantine/core";
-import Properties from "./pages/dashboard/Properties";
-import Bookings from "./pages/dashboard/Bookings";
 
 function App() {
   return (
@@ -57,6 +57,7 @@ function App() {
               <Route path="" element={<Overview />} />
               <Route path="properties" element={<Properties />} />
               <Route path="bookings" element={<Bookings />} />
+              <Route path="agents" element={<DashboardAgent />} />
             </Route>
           </Routes>
           {/* </AuthProvider> */}

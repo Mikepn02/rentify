@@ -38,7 +38,7 @@ export default function Footer({ isHome }: { isHome: boolean }) {
             <div className="mt-12 md:mt-0 space-y-6">
               <div className="flex items-center space-x-2">
                 <img src="/icons/logo_white.svg" width="30" height="30" />
-                <h3 className="text-base font-medium text-white">RentifyProperties</h3>
+                <h3 className="text-base font-medium text-white">Rentify Properties</h3>
               </div>
               <div className="flex flex-col space-y-6">
                 <p className="text-base text-gray-300">There are many variations of passages Lorem Ipsum available, but the majority is have suffered alteration.</p>
