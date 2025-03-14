@@ -1,5 +1,5 @@
 import { Agent } from '@/@types/types'
-import React, { useState } from 'react'
+import  { useState } from 'react'
 import Agents from './Agents'
 
 

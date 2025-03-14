@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import { useState } from "react";
 import {  Property} from "../../@types/types";
 import { Link } from "react-router-dom";
 import { Badge } from "../ui/Badge";

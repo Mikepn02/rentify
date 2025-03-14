@@ -6,6 +6,8 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 
+export const convertFileToUrl = (file: File) => URL.createObjectURL(file)
+
 export const getGreeting = (): string => {
     const hour = new Date().getHours();
 

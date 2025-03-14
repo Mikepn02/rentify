@@ -1,4 +1,3 @@
-import React from 'react'
 import HomeBanner from '../../components/home/HomeBanner'
 import HomeAdsSection from '../../components/home/HomeAdsSection'
 import FeaturedProperties from '../../components/home/FeaturedProperties'

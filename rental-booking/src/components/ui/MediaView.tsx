@@ -1,14 +1,13 @@
 import { currentImage, currentVideo, showModal } from '@/atoms/state';
 import React, { useRef, useState } from 'react'
 import ReactPlayer, { default as _ReactPlayer } from 'react-player/lazy';
-import { ReactPlayerProps } from "react-player/types/lib";
 import { useRecoilState } from 'recoil';
 
 const   MediaView = () => {
     const [img, setImage] = useRecoilState(currentImage);
     const [_showModal, setShowModal] = useRecoilState(showModal);
     const [video, setVideo] = useRecoilState(currentVideo);
-    const [muted, setMuted] = useState(false);
+    const [muted] = useState(false);
 
     console.log("Here is the current video: ", video)
 
@@ -42,6 +41,7 @@ const   MediaView = () => {
                   style={{ position: "absolute", top: "0", left: "0" }}
                   playing
                   muted={muted}
+                  
                   />
             }
 

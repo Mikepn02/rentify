@@ -1,6 +1,6 @@
 import { IconButton } from "@/components/ui/IconButton";
 import { Icon } from "@iconify/react";
-import React, { FC } from "react";
+import  { FC } from "react";
 
 type props = {
   title: string;

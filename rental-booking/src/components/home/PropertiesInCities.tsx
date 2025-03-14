@@ -1,4 +1,3 @@
-import React from 'react'
 import { Link } from 'react-router-dom';
 import { City } from '../../@types/types';
 
@@ -12,10 +11,10 @@ interface CityProps {
 }
 
 
-const CityCard = ({ city, i }: CityProps) => {
+const CityCard = ({ city }: CityProps) => {
     const imageProps = "";
     return (
-        <Link href={'/properties'}>
+        <Link to={'/properties'}>
             <div className="group w-full h-80  flex items-center justify-center relative bg-[#465F78] blend-n-multiply bg-cover bg-center bg-no-repeat bg-blend-multiply cursor-pointer "
                style={{ 
                 backgroundImage: `linear-gradient(#a8b5c2,#a8b5c2),url(${imageProps || 'https://www.adanirealty.com/-/media/project/realty/blogs/what-is-real-estate-meaning-types-characteristics.ashx'})` 

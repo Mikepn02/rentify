@@ -3,7 +3,6 @@ import AgentSlider from "@/components/agents/AgentSlider";
 import ServiceComponent from "@/components/services/ServiceComponent";
 import VideoComponent from "@/components/ui/Video";
 import { dummyAgents } from "@/constants";
-import React from "react";
 
 const video: Video = {
   banner: "/images/video-banner.png",

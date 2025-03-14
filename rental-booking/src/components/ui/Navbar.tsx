@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { navLinks } from "../../constants"; // Assuming you have a 'constants' file with navLinks defined.
 import { Button } from "./button"; // Button component that you already have.

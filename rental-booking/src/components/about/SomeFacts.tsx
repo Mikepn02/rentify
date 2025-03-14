@@ -1,4 +1,3 @@
-import React from "react";
 import { Fact } from "../../@types/types";
 
 const facts: Fact[] = [

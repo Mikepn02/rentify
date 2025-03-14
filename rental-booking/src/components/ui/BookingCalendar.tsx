@@ -79,7 +79,7 @@ const BookingCalendar = ({ bookings = [], onDateSelect }: BookingCalendarProps) 
             mode="range"
             defaultMonth={date.from || new Date()}
             selected={date}
-            onSelect={setDate}
+            onSelect={(range) => setDate(range ?? { from: new Date(), to: new Date() })}
             numberOfMonths={2}
             disabled={(date) => 
               date < new Date(new Date().setHours(0, 0, 0, 0)) ||

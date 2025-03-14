@@ -1,4 +1,4 @@
-import React from "react";
+
 import Partner from "../ui/Partner";
 
 const TrustedPartners = () => {

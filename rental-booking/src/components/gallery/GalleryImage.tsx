@@ -1,5 +1,4 @@
 import { currentImage, showModal } from "@/atoms/state";
-import React from "react";
 import { useRecoilState } from "recoil";
 
 

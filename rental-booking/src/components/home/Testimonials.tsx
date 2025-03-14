@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import  { useState } from 'react'
 import { Testimonial } from '../../@types/types'
 import TestimonialSliderComponent from '../ui/TestimonialSliderComponent';
 

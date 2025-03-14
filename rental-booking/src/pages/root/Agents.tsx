@@ -1,6 +1,6 @@
 import { Agent } from "@/@types/types";
 import Agents from "@/components/agents/Agents";
-import React from "react";
+
 
 
 interface AgentsPageProps{

@@ -41,6 +41,7 @@
     "react-credit-card-input": "^1.1.5",
     "react-day-picker": "8.10.1",
     "react-dom": "^18.3.1",
+    "react-dropzone": "^14.3.8",
     "react-google-places-autocomplete": "^4.1.0",
     "react-helmet": "^6.1.0",
     "react-hook-form": "^7.54.2",

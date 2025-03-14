@@ -168,7 +168,7 @@ const PropertyList = () => {
                           </SelectTrigger>
                           <SelectContent>
                             {/* Use null for an empty value or avoid this item */}
-                            <SelectItem value={null}>Any type</SelectItem>
+                            <SelectItem value="0">Any type</SelectItem>
                             <SelectItem value="Villa">Villa</SelectItem>
                             <SelectItem value="House">House</SelectItem>
                             <SelectItem value="Apartment">Apartment</SelectItem>
@@ -189,7 +189,7 @@ const PropertyList = () => {
                             <SelectValue placeholder="Any bedrooms" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value={null}>Any bedrooms</SelectItem>
+                            <SelectItem value="0">Any bedrooms</SelectItem>
                             <SelectItem value="1">1 Bedroom</SelectItem>
                             <SelectItem value="2">2 Bedrooms</SelectItem>
                             <SelectItem value="3">3 Bedrooms</SelectItem>
@@ -209,7 +209,7 @@ const PropertyList = () => {
                             <SelectValue placeholder="Any bathrooms" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value={null}>Any bathrooms</SelectItem>
+                            <SelectItem value="0">Any bathrooms</SelectItem>
                             <SelectItem value="1">1 Bathroom</SelectItem>
                             <SelectItem value="2">2 Bathrooms</SelectItem>
                             <SelectItem value="3+">3+ Bathrooms</SelectItem>

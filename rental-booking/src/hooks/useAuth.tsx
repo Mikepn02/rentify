@@ -5,7 +5,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "../lib/axios.config";
 import { notifications } from "@mantine/notifications";
-import { getCookie, setCookie } from "@/lib/utils";
+import {  setCookie } from "@/lib/utils";
 
 interface AuthContextType {
   user: User | null;
@@ -115,8 +115,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
   
   const logout = async () => {
+    setLoggingOut(true)
     try {
-      const { data } = await axios.post("/auth/logout");
+      await axios.post("/auth/logout");
       notifications.show({
         title: "Success",
         message: "Successfully Logged out",
@@ -129,6 +130,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         message: "Failed to Login with Google",
         color: "red",
       });
+    }finally{
+      setLoggingOut(false)
     }
   };
 

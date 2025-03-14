@@ -1,7 +1,4 @@
 
-import React from 'react'
-
-
 const serviceAds = [
     {
         icon: "/icons/buy_sell_icon.svg",

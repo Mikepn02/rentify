@@ -1,11 +1,10 @@
 
 import { Video } from '@/@types/types'
 import { showModal } from '@/atoms/state'
-import React from 'react'
 import { useRecoilState } from 'recoil'
 
 
-const VideoComponent = ({ banner, url }: Video) => {
+const VideoComponent = ({ banner }: Video) => {
     const [_modal, setShowModal] = useRecoilState(showModal)
     return (
         <div onClick={() => setShowModal(true)} className="w-full relative h-96 bg-cover bg-center bg-no-repeat bg-blend-multiply flex items-center justify-center"

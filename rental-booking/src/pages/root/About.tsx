@@ -8,7 +8,7 @@ import TestimonialSlider from "@/components/home/Testimonials";
 import TrustedPartners from "@/components/home/TrustedPartners";
 import VideoComponent from "@/components/ui/Video";
 import { dummyGalleryImages, dummytestimonials } from "@/constants";
-import React from "react";
+
 
 const video: Video = {
   banner: "/images/video-banner.png",

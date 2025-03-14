@@ -1,8 +1,7 @@
 import { Agent } from '@/@types/types'
-import React from 'react'
 import { Link } from 'react-router-dom'
 
-const Agents = ({ name , profileImage , slug, socialMedia , likedBy, role} : Agent) => {
+const Agents = ({ name , profileImage , slug, role} : Agent) => {
   return (
      <Link to={`/${slug}`}>
           <div className='py-8 flex flex-col items-center space-y-2 border border-[#D3DEE8] shadow-sm  hover:border-primary-light cursor-pointer rounded-[4px]'>

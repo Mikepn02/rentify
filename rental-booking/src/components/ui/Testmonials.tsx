@@ -1,5 +1,5 @@
 import { TestimonialSlider } from "@/@types/types";
-import React from "react";
+
 
 interface TestimonailProps {
   testimonials: TestimonialSlider[];
