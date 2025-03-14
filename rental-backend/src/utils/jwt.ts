@@ -5,9 +5,13 @@ export const generateToken = (userId: string): string => {
 }
 
 export const verifyToken = (token: string) => {
-    return jwt.verify(token , process.env.JWT_SECRET as string)
-}
-
+    try {
+      return jwt.verify(token, process.env.JWT_SECRET);
+    } catch (error) {
+      console.error("JWT Verification Failed:", error);
+      return null;
+    }
+  };
 export const extractPayload = (token: string) => {
     const payload = verifyToken(token);
     return payload;

@@ -55,7 +55,7 @@ const ContactUs = () => {
     console.log(data);
   };
   return (
-    <div className="w-full">
+    <div className="w-full mt-20">
       <main className="px-4 xl:px-60 lg:px-40 md:px-12 py-20 flex flex-col space-y-5">
         <div className="flex flex-col space-y-5">
           <div className="space-y-2">

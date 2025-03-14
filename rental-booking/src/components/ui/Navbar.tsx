@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { navLinks } from "../../constants"; // Assuming you have a 'constants' file with navLinks defined.
 import { Button } from "./button"; // Button component that you already have.
@@ -6,10 +6,26 @@ import { Bars3Icon } from "@heroicons/react/24/outline"; // Mobile menu icon fro
 import { Sheet, SheetContent } from "./sheet"; // Assuming you're using a sheet component for mobile menu.
 
 const Navbar = () => {
+  const [scrolled , setScrolled] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      if(window.scrollY > 10){
+        setScrolled(true)
+      }else{
+        setScrolled(false)
+      }
+    }
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll)
+  },[])
+
   return (
-    <div className="relative w-full shadow-xl">
+    <div className={`fixed top-0 right-0 left-0 z-50 transition-all w-full duration-300 px-6 lg:px-10${
+      scrolled ? 'bg-white/90 backdrop-blur-md shadow-lg py-3': 'bg-transparent py-6'
+    }`}>
       {/* MOBILE NAVBAR */}
       <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
         <SheetContent className="w-80 bg-primary-light flex flex-col justify-center px-6 pb-6 overflow-y-auto space-y-5">
@@ -26,7 +42,7 @@ const Navbar = () => {
               <Link
                 to={link.href}
                 key={index}
-                className="font-bold hover:text-blue-500 text-white"
+                className={`${scrolled ? 'font-bold hover:text-blue-500 text-white' : "text-white"}`}
               >
                 {link.title}
               </Link>
@@ -70,18 +86,18 @@ const Navbar = () => {
             <Link
               to={link.href}
               key={index}
-              className="text-heading-1 font-bold hover:text-blue-500"
+              className={`${scrolled ? 'text-heading-1 font-bold hover:text-blue-500' : 'text-heading-2 font-bold'}`}
             >
               {link.title}
             </Link>
           ))}
           <Link to={"/login"}>
-            <Button className="bg-blue-600 text-white px-4 py-2 rounded-full">
+            <Button className="bg-primary-light text-white px-4 py-2 rounded-full hover:bg-primary-light">
               Sign in
             </Button>
           </Link>
           <Link to={"/signup"}>
-            <Button className="bg-transparent text-black border-2 border-black px-4 py-2 rounded-full">
+            <Button className={`bg-transparent px-4 py-2 rounded-full  hover:bg-primary-light ${scrolled ? 'border-none bg-primary-light text-white' :'bg-primary-light'}`}>
               Sign up
             </Button>
           </Link>

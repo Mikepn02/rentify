@@ -16,7 +16,7 @@ interface ServiceProp{
 }
 const Service = ({ services }: ServiceProp) => {
   return (
-    <div className="w-full">
+    <div className="w-full mt-10">
       <head>
         <title>Prime Properties | Our services</title>
         <link rel="shortcut icon" href="/icons/logo.svg" type="image/x-icon" />

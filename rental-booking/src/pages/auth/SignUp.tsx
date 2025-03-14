@@ -60,7 +60,7 @@ const SignUp = () => {
         <div>
           <Link to={"/"}>
             <p className="font-bold text-3xl text-primary-light italic text-center">
-              Tura
+              Rentify Properties
             </p>
           </Link>
         </div>

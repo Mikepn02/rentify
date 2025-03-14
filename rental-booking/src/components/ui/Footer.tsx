@@ -91,7 +91,7 @@ export default function Footer({ isHome }: { isHome: boolean }) {
         </div>
         <div className="mt-8 border-t border-t-gray-400 flex pt-6 justify-center">
           <p className="mt-8 text-base text-white/75 md:mt-0">
-            Developed And maintainded by Tura.
+            Developed And maintainded by Mike.
           </p>
         </div>
       </div>

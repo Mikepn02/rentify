@@ -1,95 +1,70 @@
 
 import React, { useState } from "react";
-import { Feature, Property } from "../../@types/types";
+import {  Property} from "../../@types/types";
 import { Link } from "react-router-dom";
+import { Badge } from "../ui/Badge";
+import { Calendar, MapPin } from 'lucide-react';
 
 
-interface FeatureProps {
-    i: number;
-    feature: Feature;
-}
-
-export const PropertyFeature = ({ feature: { name, value, icon }, i }: FeatureProps) => {
-    return (
-        <div className={i !== 2 ? "flex space-x-1 items-center border-r-2 pr-2" : "flex space-x-1 items-center"}>
-            {/* <img src={`/icons/${icon}.svg`} width={20} height={20} /> */}
-            <h1>{icon}</h1>
-            <p className="text-sm text-gray-primary/75">{value}</p>
-            <p className="text-sm text-gray-primary/75">{name}</p>
-        </div>
-    )
-}
 
 interface PropertyCardProps {
     property: Property;
-}
+  }
 
-const PropertyCard = ({ property }: PropertyCardProps) => {
-    const { name, price, bannerImage, features, status, slug, likedBy, _id} = property
-    const [isLiked, setIsLiked] = useState(false);
-
-    const toggleIsLiked = () => {}
-
+  const PropertyCard = ({ property }: PropertyCardProps) => {
+    const [imageLoaded, setImageLoaded] = useState(false);
+  
     return (
-        <div className="flex  flex-col space-y-3 shadow-md border border-white hover:shadow-xl  rounded xl:w-[21.4vw] xl: h-[50vh]">
-            <div className="relative w-full h-48">
-                <Link to={`/${slug}`}>
-                    <img src={bannerImage} className="cursor-pointer w-full object-cover" />
-                </Link>
-                <div className="absolute top-2 left-0 w-full z-20 py-2 flex items-center justify-between px-4">
-                    <div className="bg-white px-2 space-x-2 flex items-center py-1 rounded-[1px]">
-                        {
-                            (status === "sold" || status === "rented") ? (
-                                <div className="h-3 w-3 rounded-full bg-[#F21515]"> </div>
-                            ) : (
-                                <div className="h-3 w-3 rounded-full bg-[#15F26E]"></div>
-                            )
-                        }
-                        <p className="text-sm text-gray-primary/75">
-                            {status === "forSale" && 'For Sale'}
-                            {status === "forRent" && 'For Rent'}
-                            {status === "sold" && 'Sold'}
-                            {status === "rented" && 'Rented'}
-                        </p>
-                    </div>
-                    <div className="flex p-1 items-center justify-center bg-white rounded-full cursor-pointer" onClick={toggleIsLiked}>
-                        {
-                            !isLiked ?
-                                <img src={'/icons/heart_icon.svg'} width={20} height={20} />
-                                :
-                                <img src={'/icons/heart_icon_filled.svg'} width={20} height={20} />
-                        }
-                    </div>
-                </div>
-            </div>
-            <div className="flex flex-col space-y-2 p-2">
-                <Link to={`/${slug}`}>
-                    <h2 className="cursor-pointer font-medium text-xl truncate">{name}</h2>
-                </Link>
-                <div className="flex items-center space-x-2">
-                    <img src='/icons/address_icon.svg' height={20} width={20} />
-                    <p className="text-sm text-gray-primary/75">address</p>
-                </div>
-                <div className="w-full justify-between items-center flex py-3 border-b-2 border-t-2">
-                    {
-                        features.slice(0, 3).map((feature, i) => (
-                            <PropertyFeature key={i} feature={feature} i={i} />
-                        ))
-                    }
-                </div>
-                <div className="flex justify-between items-center">
-                    <p className="font-medium text-lg">${price}</p>
-                    <Link to={`/property/${_id}`}>
-                        <button className=" py-2 px-6 hover:text-white hover:bg-primary-light border border-primary-light/75 text-sm transition duration-300">
-                            See Details
-                        </button>
-                    </Link>
-
-
-                </div>
-            </div>
+      <Link to={`/property/${property.id}`} className="property-card group block">
+        <div className="relative aspect-[4/3] overflow-hidden rounded-xl">
+          <div className={`absolute inset-0 ${imageLoaded ? '' : 'image-loading'}`} />
+          <img
+            src={property.images[0]}
+            alt={property.title}
+            className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${
+              imageLoaded ? 'opacity-100' : 'opacity-0'
+            }`}
+            onLoad={() => setImageLoaded(true)}
+          />
+          <Badge className="absolute top-3 right-3 bg-white/90 text-foreground backdrop-blur-sm hover:bg-white/90">
+            ${property.price}/night
+          </Badge>
         </div>
-    )
-}
+        <div className="pt-4 pb-2 px-1">
+          <div className="flex items-start justify-between">
+            <div>
+              <h3 className="font-medium text-base line-clamp-1">{property.title}</h3>
+              <div className="flex items-center mt-1 text-muted-foreground text-sm">
+                <MapPin className="w-3.5 h-3.5 mr-1" />
+                <span>{property.location}</span>
+              </div>
+            </div>
+            <div className="flex items-center mt-1">
+              <div className="text-sm font-medium flex items-center">
+                <span className="text-yellow-500 mr-1">★</span>
+                {property.rating}
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex items-center justify-between mt-3 text-xs text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <span>{property.type}</span>
+              <span>•</span>
+              <span>{property.bedrooms} beds</span>
+              <span>•</span>
+              <span>{property.bathrooms} baths</span>
+            </div>
+            
+            <div className="flex items-center text-primary">
+              <Calendar className="w-3.5 h-3.5 mr-1" />
+              <span>Available</span>
+            </div>
+          </div>
+        </div>
+      </Link>
+    );
+  };
+  
 
 export default PropertyCard;

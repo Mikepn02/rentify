@@ -3,7 +3,7 @@ import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { RecoilRoot } from "recoil";
 import DashboardLayout from "./components/layouts/DashboardLayout";
 import MainLayout from "./components/layouts/MainLayout";
-import { dummyAgents, dummyProperties, dummyServices } from "./constants";
+import { dummyAgents, dummyServices } from "./constants";
 import Login from "./pages/auth/Login";
 import SignUp from "./pages/auth/SignUp";
 import DashboardAgent from "./pages/dashboard/Agents";
@@ -19,48 +19,54 @@ import NotFound from "./pages/root/NotFound";
 import PropertyDetail from "./pages/root/PropertyDetail";
 import PropertyList from "./pages/root/PropertyList";
 import Service from "./pages/root/Service";
+import TopLoader from "./components/loader/TopLoader";
+import "@mantine/core/styles.css";
+import { Notifications } from "@mantine/notifications";
+import "@mantine/notifications/styles.css";
+import { AuthProvider } from "./hooks/useAuth";
 
 function App() {
   return (
     <RecoilRoot>
       <MantineProvider>
+        <Notifications />
         <Router>
-          {/* <AuthProvider> */}
-          <Routes>
-            <Route path="/" element={<MainLayout isHome={true} />}>
-              <Route index element={<Home />} />
-            </Route>
-            <Route path="/" element={<MainLayout isHome={false} />}>
-              <Route path="about" element={<About />} />
-              <Route
-                path="properties"
-                element={<PropertyList properties={dummyProperties} />}
-              />
-              <Route path="property/:id" element={<PropertyDetail />} />
-              <Route
-                path="services"
-                element={<Service services={dummyServices} />}
-              />
-              <Route
-                path="agents"
-                element={<AgentPage agents={dummyAgents} />}
-              />
-              <Route path="contact" element={<Contact />} />
+          <AuthProvider>
+            <TopLoader />
+            <Routes>
+              <Route path="/" element={<MainLayout isHome={true} />}>
+                <Route index element={<Home />} />
+              </Route>
+              <Route path="/" element={<MainLayout isHome={false} />}>
+                <Route path="about" element={<About />} />
+                <Route path="properties" element={<PropertyList />} />
+                <Route path="property/:id" element={<PropertyDetail />} />
+                <Route
+                  path="services"
+                  element={<Service services={dummyServices} />}
+                />
+                <Route
+                  path="agents"
+                  element={<AgentPage agents={dummyAgents} />}
+                />
+                <Route path="contact" element={<Contact />} />
 
-              <Route path="*" element={<NotFound />} />
-            </Route>
-            <Route path="book/:id" element={<BookProperty />} />
-            <Route path="signup" element={<SignUp />} />
-            <Route path="login" element={<Login />} />
+                <Route path="booking" element={<BookProperty />} />
+                <Route path="*" element={<NotFound />} />
+              </Route>
+              <Route path="signup" element={<SignUp />} />
+              <Route path="login" element={<Login />} />
 
-            <Route path="/dashboard" element={<DashboardLayout />}>
-              <Route path="" element={<Overview />} />
-              <Route path="properties" element={<Properties />} />
-              <Route path="bookings" element={<Bookings />} />
-              <Route path="agents" element={<DashboardAgent />} />
-            </Route>
-          </Routes>
-          {/* </AuthProvider> */}
+              {/* <Route path="/dashboard" element={<ProtectedRoute />}> */}
+              <Route path="/dashboard" element={<DashboardLayout />}>
+                <Route index element={<Overview />} />
+                <Route path="properties" element={<Properties />} />
+                <Route path="bookings" element={<Bookings />} />
+                <Route path="agents" element={<DashboardAgent />} />
+              </Route>
+              {/* </Route> */}
+            </Routes>
+          </AuthProvider>
         </Router>
       </MantineProvider>
     </RecoilRoot>

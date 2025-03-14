@@ -11,6 +11,7 @@ import { LifeBuoy, LogOut, UserCircle } from "lucide-react";
 import React, { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { Button } from "../ui/button";
+import useAuth from "@/hooks/useAuth";
 
 const navigation = [
   { name: "Overview", href: "/dashboard", icon: HomeIcon },
@@ -21,7 +22,6 @@ const navigation = [
   },
   { name: "Agents", href: "/dashboard/agents", icon: UserGroupIcon },
   { name: "Bookings", href: "/dashboard/bookings", icon: CalendarIcon },
-  { name: "Settings", href: "/dashboard/settings", icon: CogIcon },
 ];
 
 const bottomNavigation = [
@@ -34,6 +34,7 @@ const classNames = (...classes: string[]) => classes.filter(Boolean).join(" ");
 const DashboardLayout: React.FC = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
+  const { user , logout } = useAuth()
 
   return (
     <div className="flex">
@@ -166,7 +167,8 @@ const DashboardLayout: React.FC = () => {
             <li>
               <Button
                 variant="outline"
-                className="bg-transparent border-none text-white hover:bg-blue-200 hover:text-white group flex items-center gap-x-3 rounded-md p-2 text-md font-semibold transition-all"
+                className="bg-transparent border-none text-white hover:bg-transparent hover:text-white group flex items-center gap-x-3 rounded-md p-2 text-md font-semibold transition-all"
+                onClick={logout}
               >
                 <LogOut className="h-6 w-6" />
                 <span>Logout</span>
@@ -198,10 +200,10 @@ const DashboardLayout: React.FC = () => {
                 <UserCircle />
                 <span className="flex flex-col ml-4">
                   <span className="text-sm font-semibold text-gray-900 md:text-base">
-                    John Doe
+                    {user?.firstName+ " " + user?.lastName}
                   </span>
                   <span className="text-xs md:text-sm font-semibold text-gray-500">
-                    johndoe@example.com
+                    {user?.email}
                   </span>
                 </span>
               </div>

@@ -13,56 +13,50 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-model User{
-  id         String @id @default(cuid())
-  firstName  String
-  lastName   String
-  email      String @unique
-  password   String?
-  googleId   String?
-  role       Role
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  properties Property[]
-  bookings   Booking[]
-
-
+model User {
+  id          String     @id @default(cuid())
+  firstName   String
+  lastName    String
+  email       String     @unique
+  phoneNumber String?
+  password    String?
+  googleId    String?
+  role        Role
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  properties  Property[]
+  bookings    Booking[]
 }
 
-
-model Property{
-  id            String @id @default(cuid())
+model Property {
+  id            String    @id @default(cuid())
   title         String
   description   String
   hostId        String
-  renter        User   @relation(fields: [hostId], references: [id])
+  renter        User      @relation(fields: [hostId], references: [id])
   pricePerNight String
   location      String
   imageUrl      String
   bookings      Booking[]
 }
 
-
-model Booking{
-  id            String @id @default(cuid())
-  renter        User   @relation(fields: [renterId], references: [id])
-  renterId      String
-  property      Property @relation(fields: [propertyId], references: [id])
-  propertyId    String
-  checkInDate   DateTime
-  checkoutDate  DateTime
-  status        BookingStatus
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-
+model Booking {
+  id           String        @id @default(cuid())
+  renter       User          @relation(fields: [renterId], references: [id])
+  renterId     String
+  property     Property      @relation(fields: [propertyId], references: [id])
+  propertyId   String
+  checkInDate  DateTime
+  checkoutDate DateTime
+  status       BookingStatus
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 }
 
 enum Role {
   RENTER
   HOST
 }
-
 
 enum BookingStatus {
   PENDING

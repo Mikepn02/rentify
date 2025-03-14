@@ -1,85 +1,310 @@
-import React from "react";
-import { Property } from "../../@types/types";
-import PropertyListCard from "../../components/cards/PropertyListCard";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import L from "leaflet";
-import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
-import markerIcon from "leaflet/dist/images/marker-icon.png";
-import markerShadow from "leaflet/dist/images/marker-shadow.png";
-import { Link } from "react-router-dom";
-import Search from "@/components/ui/Search";
-import Filters from "@/components/ui/filters";
+import { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+
+import { properties, Property } from "@/lib/data";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { MapPin } from "lucide-react";
+import PageTransition from "@/components/layouts/PageTransition";
+import { Slider } from "@/components/ui/Slider";
 import { Button } from "@/components/ui/button";
+import PropertyCard from "@/components/cards/PropertyCard";
 
-interface PropertyListProps {
-  properties: Property[];
-}
+const PropertyList = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [filteredProperties, setFilteredProperties] =
+    useState<Property[]>(properties);
 
-// Custom Marker Icon Fix
-const customIcon = L.icon({
-  iconUrl: markerIcon,
-  iconRetinaUrl: markerIcon2x,
-  shadowUrl: markerShadow,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [0, -41],
-});
+  // Filter states
+  const [priceRange, setPriceRange] = useState<number[]>([0, 1000]);
+  const [propertyType, setPropertyType] = useState<string>("");
+  const [bedrooms, setBedrooms] = useState<string>("");
+  const [bathrooms, setBathrooms] = useState<string>("");
 
-const PropertyList = ({ properties }: PropertyListProps) => {
-  const position: [number, number] = [-1.9536, 30.0605];
+  useEffect(() => {
+    setIsLoaded(true);
+
+    // Parse query parameters
+    const params = new URLSearchParams(location.search);
+    const typeParam = params.get("type");
+
+    if (typeParam) {
+      setPropertyType(typeParam);
+    }
+  }, [location.search]);
+
+  useEffect(() => {
+    // Apply filters
+    let result = properties;
+
+    if (propertyType) {
+      result = result.filter((property) => property.type === propertyType);
+    }
+
+    if (bedrooms) {
+      result = result.filter(
+        (property) =>
+          property.bedrooms === parseInt(bedrooms) ||
+          (bedrooms === "4+" && property.bedrooms >= 4)
+      );
+    }
+
+    if (bathrooms) {
+      result = result.filter(
+        (property) =>
+          property.bathrooms === parseInt(bathrooms) ||
+          (bathrooms === "3+" && property.bathrooms >= 3)
+      );
+    }
+
+    result = result.filter(
+      (property) =>
+        property.price >= priceRange[0] && property.price <= priceRange[1]
+    );
+
+    setFilteredProperties(result);
+  }, [propertyType, bedrooms, bathrooms, priceRange]);
+
+  const applyFilter = (type: string, value: string) => {
+    if (type === "type") {
+      setPropertyType(value);
+      const params = new URLSearchParams(location.search);
+      if (value) {
+        params.set("type", value);
+      } else {
+        params.delete("type");
+      }
+      navigate({ search: params.toString() });
+    } else if (type === "bedrooms") {
+      setBedrooms(value);
+    } else if (type === "bathrooms") {
+      setBathrooms(value);
+    }
+  };
+
+  const resetFilters = () => {
+    setPriceRange([0, 1000]);
+    setPropertyType("");
+    setBedrooms("");
+    setBathrooms("");
+    navigate("/properties");
+  };
+
+  const locationGroups = Array.from(
+    new Set(
+      properties.map((property) => property.location.split(",")[1]?.trim())
+    )
+  ).filter(Boolean);
 
   return (
-    <div className="w-full flex flex-col">
-      <Search />
-      <div className="p-5 border-b-[1px] border-gray-200">
-        <Filters />
-      </div>
-      <div className="w-full flex flex-col md:flex-row h-screen gap-4 p-5">
-        <div className="w-full md:w-1/2 flex flex-col gap-4 overflow-y-auto scrollbar-hide">
-          <h2 className="text-sm text-heading-1 font-semibold">
-            {properties.length} properties
-          </h2>
-          <div className="w-full flex flex-row justify-between py-4 bg-blue-950 text-white p-5 rounded-xl">
-            <div className="flex justify-center items-center gap-4">
-              <img
-                src="https://a.travel-assets.com/egds/marks/onekey__standard__always_light.svg"
-                alt="travel assets"
-                width={50}
-                height={50}
-              />
-              <h1 className="text-xl font-bold">
-                Members Always get our best prices when signed in
-              </h1>
+    <PageTransition>
+      <div className="min-h-screen flex flex-col mt-10">
+        <main className="flex-grow pt-24">
+          {/* Hero Section */}
+          <section className="relative h-[30vh] min-h-[240px] bg-accent">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-primary/10" />
+            <div className="relative h-full flex items-center px-6 lg:px-8">
+              <div className="max-w-7xl mx-auto w-full">
+                <h1 className="text-3xl md:text-4xl font-medium mb-4">
+                  Find Your Perfect Property
+                </h1>
+                <p className="text-lg text-muted-foreground max-w-2xl">
+                  Browse our extensive collection of premium properties across
+                  various locations.
+                </p>
+              </div>
             </div>
-            <Button className="bg-blue-600">Sign in</Button>
-          </div>
-          {properties.map((property) => (
-            <Link to={`/property/${property._id}`} key={property._id}>
-              <PropertyListCard property={property} />
-            </Link>
-          ))}
-        </div>
+          </section>
 
-        <div className="w-full md:w-1/2 h-full">
-          <div className="rounded-xl overflow-hidden shadow-lg border-2 h-full">
-            <MapContainer
-              center={position}
-              zoom={13}
-              style={{ height: "100%", width: "100%" }}
-            >
-              <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              />
-              <Marker position={position} icon={customIcon}>
-                <Popup>Hello! This is Rwanda .</Popup>
-              </Marker>
-            </MapContainer>
-          </div>
-        </div>
+          {/* Filters and Listings */}
+          <section className="py-12 px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto">
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                {/* Filters Sidebar */}
+                <div className="lg:col-span-1">
+                  <div className="bg-white p-6 rounded-xl shadow-sm sticky top-24">
+                    <h2 className="text-lg font-medium mb-6">Filters</h2>
+
+                    <div className="space-y-6">
+                      {/* Price Range */}
+                      <div>
+                        <h3 className="text-sm font-medium mb-4">
+                          Price Range
+                        </h3>
+                        <div className="px-2">
+                          <Slider
+                            defaultValue={[0, 1000]}
+                            max={1000}
+                            step={50}
+                            value={priceRange}
+                            onValueChange={setPriceRange}
+                            className="mb-6"
+                          />
+                          <div className="flex items-center justify-between text-sm">
+                            <span>${priceRange[0]}</span>
+                            <span>${priceRange[1]}+</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Property Type */}
+                      <div>
+                        <h3 className="text-sm font-medium mb-3">
+                          Property Type
+                        </h3>
+                        <Select
+                          value={propertyType}
+                          onValueChange={(value) => applyFilter("type", value)}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Any type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {/* Use null for an empty value or avoid this item */}
+                            <SelectItem value={null}>Any type</SelectItem>
+                            <SelectItem value="Villa">Villa</SelectItem>
+                            <SelectItem value="House">House</SelectItem>
+                            <SelectItem value="Apartment">Apartment</SelectItem>
+                            <SelectItem value="Cabin">Cabin</SelectItem>
+                            <SelectItem value="Townhouse">Townhouse</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Bedrooms */}
+                      <div>
+                        <h3 className="text-sm font-medium mb-3">Bedrooms</h3>
+                        <Select 
+                          value={bedrooms}
+                          onValueChange={(value) => applyFilter('bedrooms', value)}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Any bedrooms" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value={null}>Any bedrooms</SelectItem>
+                            <SelectItem value="1">1 Bedroom</SelectItem>
+                            <SelectItem value="2">2 Bedrooms</SelectItem>
+                            <SelectItem value="3">3 Bedrooms</SelectItem>
+                            <SelectItem value="4+">4+ Bedrooms</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Bathrooms */}
+                      <div>
+                        <h3 className="text-sm font-medium mb-3">Bathrooms</h3>
+                        <Select 
+                          value={bathrooms} 
+                          onValueChange={(value) => applyFilter('bathrooms', value)}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Any bathrooms" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value={null}>Any bathrooms</SelectItem>
+                            <SelectItem value="1">1 Bathroom</SelectItem>
+                            <SelectItem value="2">2 Bathrooms</SelectItem>
+                            <SelectItem value="3+">3+ Bathrooms</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Locations */}
+                      <div>
+                        <h3 className="text-sm font-medium mb-3">
+                          Popular Locations
+                        </h3>
+                        <div className="space-y-2">
+                          {locationGroups.map((location) => (
+                            <div
+                              key={location}
+                              className="flex items-center gap-2"
+                            >
+                              <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
+                              <span className="text-sm text-muted-foreground">
+                                {location}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Reset Filters */}
+                      <Button
+                        variant="outline"
+                        className="w-full mt-4"
+                        onClick={resetFilters}
+                      >
+                        Reset Filters
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Listings */}
+                <div className="lg:col-span-3">
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-xl font-medium">
+                      {filteredProperties.length}{" "}
+                      {filteredProperties.length === 1
+                        ? "Property"
+                        : "Properties"}
+                    </h2>
+                    <Select defaultValue="featured">
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Sort by" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="featured">Featured</SelectItem>
+                        <SelectItem value="price-asc">Price: Low to High</SelectItem>
+                        <SelectItem value="price-desc">Price: High to Low</SelectItem>
+                        <SelectItem value="rating">Highest Rating</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {filteredProperties.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {filteredProperties.map((property, index) => (
+                        <div
+                          key={property.id}
+                          className={`transition-all duration-500 transform ${
+                            isLoaded
+                              ? "opacity-100 translate-y-0"
+                              : "opacity-0 translate-y-10"
+                          }`}
+                          style={{ transitionDelay: `${index * 100}ms` }}
+                        >
+                          <PropertyCard property={property} />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="bg-accent rounded-xl p-12 text-center">
+                      <h3 className="text-xl font-medium mb-2">
+                        No properties found
+                      </h3>
+                      <p className="text-muted-foreground mb-6">
+                        Try adjusting your filters to find more properties.
+                      </p>
+                      <Button onClick={resetFilters}>Reset Filters</Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
       </div>
-    </div>
+    </PageTransition>
   );
 };
 

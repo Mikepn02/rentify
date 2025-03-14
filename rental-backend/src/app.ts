@@ -2,6 +2,9 @@ import express from "express";
 import cookieParser from "cookie-parser"
 import swaggerUi from "swagger-ui-express";
 import dotenv from "dotenv"
+import cors = require('cors');
+import bodyParser = require("body-parser");
+import helmet from "helmet";
 import swaggerFile from "../swagger-output.json";
 import authRouter from "./routes/auth.routes";
 
@@ -9,9 +12,14 @@ const APP_NAME = "Node.js Express API with Swagger Documentation and TypeScript"
 
 const app = express()
 dotenv.config()
-app.use(express.json())
-app.use(cookieParser())
 
+app.use(cors({
+  origin: ['http://localhost:5000', "https://edtech-frontend-challenge.vercel.app","https://edtech-frontend-silk.vercel.app"],  
+  credentials: true 
+}));
+app.use(bodyParser.json())
+app.use(cookieParser());
+app.use(helmet());
 
 app.get("/", (req , res) => {
    res.send(`
