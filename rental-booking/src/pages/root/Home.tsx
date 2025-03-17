@@ -8,7 +8,6 @@ import WhyChooseUs from '../../components/home/WhyChooseUs'
 import TestimonialSlider from '../../components/home/Testimonials'
 
 const Home = () => {
-  // const propertiesForSale = dummyProperties.filter(property => property.status === "forSale")
   return (
     <div className="text-xl flex items-center justify-center h-full w-full">
         <main className='flex flex-col w-full'>
@@ -18,7 +17,6 @@ const Home = () => {
             <TrustedPartners />
             <PropertiesInCities cities={dummycities}/>
             <WhyChooseUs />
-            {/* <LatestPropertiesForSale properties={propertiesForSale} /> */}
             <TestimonialSlider testimonials={dummytestimonials}/>
             
         </main>

@@ -1,3 +1,4 @@
+import CreatePropertyModal from "@/components/modal/CreatePropertyModal";
 import { DataTable } from "@/components/table/PaginatedTable";
 import { ColumnDef } from "@tanstack/react-table";
 
@@ -32,5 +33,5 @@ export const propertyColumns: ColumnDef<Property>[] = [
 ];
 
 export default function Properties() {
-  return <DataTable data={propertyData} columns={propertyColumns} filterPlaceholder="Filter properties..." addNewLabel="+ Add Property" />;
+  return <DataTable data={propertyData} columns={propertyColumns} filterPlaceholder="Filter properties..." addNewComponent={<CreatePropertyModal />} />;
 }

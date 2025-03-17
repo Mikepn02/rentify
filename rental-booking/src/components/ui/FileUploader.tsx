@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import React, { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 
 import { convertFileToUrl } from "@/lib/utils";
@@ -16,7 +16,7 @@ export const FileUploader = ({ files, onChange }: FileUploaderProps) => {
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
 
   return (
-    <div {...getRootProps()} className="file-upload">
+    <div {...getRootProps()} className="flex cursor-pointer  flex-col items-center justify-center gap-3 rounded-md border border-dashed border-primary-light p-5">
       <input {...getInputProps()} />
       {files && files?.length > 0 ? (
         <img
@@ -34,9 +34,9 @@ export const FileUploader = ({ files, onChange }: FileUploaderProps) => {
             height={40}
             alt="upload"
           />
-          <div className="file-upload_label">
-            <p className="text-14-regular ">
-              <span className="text-green-500">Click to upload </span>
+          <div className="flex flex-col justify-center gap-2 text-center">
+            <p className="text-sm">
+              <span className="text-primary-light">Click to upload </span>
               or drag and drop
             </p>
             <p className="text-12-regular">

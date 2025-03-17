@@ -159,7 +159,7 @@ const Overview = () => {
       </div>
 
       <div className="w-full rounded-xl py-10">
-        <DataTable data={propertyData} columns={propertyColumns} filterPlaceholder="Filter Properties...."  addNewLabel="Add New Property"/>
+        <DataTable data={propertyData} columns={propertyColumns} filterPlaceholder="Filter Properties...." />
       </div>
 
       

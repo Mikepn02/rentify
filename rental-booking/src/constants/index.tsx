@@ -3,6 +3,24 @@ import { Blog, City, FilterProperty, Property, Service, Testimonial } from "../@
 import { NavLink } from "../@types/types";
 
 
+
+export const PropertyFormDefaultValues = {
+  title: "",
+  location: "",
+  price: 0,
+  rating: 0,
+  reviewCount: 0,
+  type: "",
+  bedrooms: 1,
+  bathrooms: 1, 
+  area: 0,
+  description: "",
+  amenities: [], 
+  images: [], 
+  available: true, 
+};
+
+
 export const navLinks: NavLink[] = [
     {
         title: "Home",

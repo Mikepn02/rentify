@@ -149,6 +149,7 @@
   .input-wrapper {
     @apply flex flex-col space-y-1 w-full;
   }
+  
 
   .input-wrapper input,
   textarea {

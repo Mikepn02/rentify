@@ -38,5 +38,5 @@ const bookingColumns: ColumnDef<Booking>[] = [
 ];
 
 export default function Bookings() {
-  return <DataTable data={bookingData} columns={bookingColumns} filterPlaceholder="Filter bookings..." addNewLabel="+ Add Booking" />;
+  return <DataTable data={bookingData} columns={bookingColumns} filterPlaceholder="Filter bookings..." />;
 }

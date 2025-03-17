@@ -9,7 +9,7 @@ interface AgentsPageProps{
 
 const AgentPage = ({ agents }: AgentsPageProps) => {
   return (
-    <div className="w-full flex items-center justify-center">
+    <div className="w-full flex items-center justify-center mt-10">
       <head>
         <title>Prime Properties | Our Agents</title>
         <link rel="shortcut icon" href="/icons/logo.svg" type="image/x-icon" />

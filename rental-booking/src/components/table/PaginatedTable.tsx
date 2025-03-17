@@ -24,20 +24,21 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+
 const ITEMS_PER_PAGE = 5;
 
 interface DataTableProps<TData> {
   data: TData[];
   columns: ColumnDef<TData>[];
   filterPlaceholder?: string;
-  addNewLabel?: string;
+  addNewComponent?: React.ReactNode;
 }
 
 export function DataTable<TData>({
   data,
   columns,
   filterPlaceholder = "Search...",
-  addNewLabel = "+ Add New",
+  addNewComponent
 }: DataTableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -82,11 +83,11 @@ export function DataTable<TData>({
           placeholder={filterPlaceholder}
           value={(filterColumn?.getFilterValue() as string) ?? ""}
           onChange={(event) => filterColumn?.setFilterValue(event.target.value)}
-          className="max-w-sm"
+          className="w-full md:max-w-sm"
         />
-        <Button className="bg-primary-light hover:bg-primary-light text-white w-full md:w-auto">
-          {addNewLabel}
-        </Button>
+        <div>
+        {addNewComponent}
+        </div>
       </div>
 
       <div className="rounded-md">

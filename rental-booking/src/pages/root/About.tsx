@@ -17,7 +17,7 @@ const video: Video = {
 
 const About = () => {
   return (
-    <div className="w-full">
+    <div className="w-full mt-10">
       <main className="flex flex-col pb-12 pt-24 space-y-12">
         <div className="flex flex-col relative xl:px-60 lg:px-40 md:px-12 px-4 space-y-12">
           <KnowMore />

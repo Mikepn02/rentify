@@ -5,7 +5,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "../lib/axios.config";
 import { notifications } from "@mantine/notifications";
-import {  setCookie } from "@/lib/utils";
+import {  deleteCookie, setCookie } from "@/lib/utils";
 
 interface AuthContextType {
   user: User | null;
@@ -37,28 +37,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
 
   useEffect(() => {
-    if (user) {
-      setInitialLoading(false);
-      return;
-    }
-
     const fetchUser = async () => {
+      setInitialLoading(true);
       try {
         const { data } = await axios.get("/auth/me");
         setUser(data.user);
       } catch (error) {
         setUser(null);
-        if (location.pathname.includes("/dashboard")) {
-          navigate("/login");
+        if (location.pathname.startsWith("/dashboard")) {
+          navigate("/login", { replace: true });
         }
-        console.log("Error: ", error);
+        console.log("Error fetching user: ", error);
       } finally {
         setInitialLoading(false);
       }
     };
-
-    fetchUser();
-  }, [location.pathname, user]);
+  
+    if (!user) {
+      fetchUser();
+    }
+  }, [location.pathname]);
+  
 
   const register = async (user: Omit<User, "id">) => {
     try {
@@ -118,6 +117,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setLoggingOut(true)
     try {
       await axios.post("/auth/logout");
+      deleteCookie("token")
       notifications.show({
         title: "Success",
         message: "Successfully Logged out",

@@ -32,5 +32,5 @@ export const agentColumns: ColumnDef<Agent>[] = [
 ];
 
 export default function DashboardAgent() {
-  return <DataTable data={agentData} columns={agentColumns} filterPlaceholder="Filter agents..." addNewLabel="+ Add Agent" />;
+  return <DataTable data={agentData} columns={agentColumns} filterPlaceholder="Filter agents..."  />;
 }
