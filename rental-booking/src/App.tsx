@@ -24,6 +24,7 @@ import "@mantine/core/styles.css";
 import { Notifications } from "@mantine/notifications";
 import "@mantine/notifications/styles.css";
 import { AuthProvider } from "./hooks/useAuth";
+import Settings from "./pages/dashboard/Setting";
 
 function App() {
   return (
@@ -63,6 +64,7 @@ function App() {
                 <Route path="properties" element={<Properties />} />
                 <Route path="bookings" element={<Bookings />} />
                 <Route path="agents" element={<DashboardAgent />} />
+                <Route path="settings" element={<Settings />} />
               </Route>
               {/* </Route> */}
             </Routes>

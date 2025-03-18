@@ -16,6 +16,25 @@ export const PropertyFormValidation = z.object({
     area: z.number().min(1, "Area must be greater than 0"),
     description: z.string().min(10, "Description must be at least 10 characters long"),
     amenities: z.array(z.string()).nonempty("At least one amenity is required"),
-    images: z.array(z.string().url()).nonempty("At least one image URL is required"),
+    images: z.array(z.string().url()).optional(),
     available: z.boolean(),
+  });
+
+
+  export const AgentFormValidation = z.object({
+    name: z.string().min(3, "Name must be at least 3 letters"),
+    profileImage: z.string().url("Invalid image URL"),
+    role: z.string().min(2, "Role must be at least 2 characters"),
+    email: z.string().email("Invalid email address"),
+    phoneNumber: z.string().min(10, "Invalid phone number"),
+    about: z.string().min(10, "About section must be at least 10 characters"),
+    socialMedia: z.array(
+      z.object({
+        platform: z.string(),
+        link: z.string().url("Invalid URL"),
+      })
+    ).optional(),
+    slug: z.string().min(3, "Slug must be at least 3 characters").optional(),
+    likedBy: z.array(z.string()).nullable().optional(),
+    
   });

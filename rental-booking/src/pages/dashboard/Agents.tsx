@@ -1,3 +1,4 @@
+import CreateAgentModal from "@/components/modal/CreateAgentModal";
 import { DataTable } from "@/components/table/PaginatedTable";
 import { ColumnDef } from "@tanstack/react-table";
 
@@ -32,5 +33,5 @@ export const agentColumns: ColumnDef<Agent>[] = [
 ];
 
 export default function DashboardAgent() {
-  return <DataTable data={agentData} columns={agentColumns} filterPlaceholder="Filter agents..."  />;
+  return <DataTable data={agentData} columns={agentColumns} filterPlaceholder="Filter agents..."  addNewComponent={<CreateAgentModal />} />;
 }

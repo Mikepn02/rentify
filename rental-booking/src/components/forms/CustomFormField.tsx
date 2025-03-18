@@ -1,6 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Control } from "react-hook-form";
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../ui/form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import PhoneInput from "react-phone-number-input";
@@ -12,6 +18,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import ReactSelect from "react-select";
+import React from "react";
 
 export enum FormFieldType {
   INPUT = "input",
@@ -21,6 +29,7 @@ export enum FormFieldType {
   DATE_PICKER = "datePicker",
   SELECT = "select",
   SKELETON = "skeleton",
+  MULTI_SELECT = "multiSelect",
 }
 
 interface CustomProps {
@@ -57,6 +66,14 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
               placeholder={props.placeholder}
               {...field}
               className="h-[44px] border-primary-light focus-visible:ring-0 focus-visible:ring-offset-0 border-0"
+              type={
+                props.name === "bedrooms" ||
+                props.name === "bathrooms" ||
+                props.name === "price"
+                  ? "number"
+                  : "text"
+              }
+              onChange={(e) => field.onChange(Number(e.target.value))}
             />
           </FormControl>
         </div>
@@ -95,7 +112,7 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
             id={props.name}
             checked={field.value}
             onCheckedChange={field.onChange}
-             className="text-white data-[state=checked]:bg-blue-500"
+            className="text-white data-[state=checked]:bg-blue-500"
           />
           <label
             htmlFor={props.name}
@@ -119,6 +136,33 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
           </Select>
         </FormControl>
       );
+
+    case FormFieldType.MULTI_SELECT: {
+      const childrenArray = React.Children.toArray(props.children);
+
+      return (
+        <FormControl>
+          <ReactSelect
+            isMulti
+            options={childrenArray.map((child: any) => ({
+              value: child.props.value,
+              label: child.props.children,
+            }))}
+            value={childrenArray
+              .filter((child: any) => field.value?.includes(child.props.value))
+              .map((child: any) => ({
+                value: child.props.value,
+                label: child.props.children,
+              }))}
+            onChange={(selected) =>
+              field.onChange(selected.map((option) => option.value))
+            }
+            className="bg-primary-light"
+          />
+        </FormControl>
+      );
+    }
+
     case FormFieldType.SKELETON:
       return props.renderSkeleton ? props.renderSkeleton(field) : null;
     default:
@@ -147,4 +191,4 @@ const CustomFormField = (props: CustomProps) => {
   );
 };
 
-export default CustomFormField
+export default CustomFormField;

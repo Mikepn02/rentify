@@ -9,6 +9,7 @@ import CustomFormField, { FormFieldType } from "./CustomFormField";
 import { FileUploader } from "../ui/FileUploader";
 import { SelectItem } from "../ui/select";
 import "react-phone-number-input/style.css";
+import { Button } from "../ui/button";
 
 const propertyTypeOptions = [
   { value: "apartment", label: "Apartment" },
@@ -34,7 +35,18 @@ const PropertyForm = () => {
 
   const onSubmit = async (values: z.infer<typeof PropertyFormValidation>) => {
     setIsLoading(true);
+    let formData: FormData;
     try {
+      formData = new FormData();
+      if (values.images && values.images?.length > 0) {
+        values.images.forEach((file) => {
+          formData.append("images", file);
+        });
+      }
+
+      formData.append("type", values.type);
+      formData.append("amenties", JSON.stringify(values.amenities));
+      console.log("Form Data: ", formData);  // Console log form data here
       console.log({
         ...values,
         type: values.type, // Already stored as string
@@ -142,9 +154,8 @@ const PropertyForm = () => {
           placeholder="Describe the property"
         />
 
-        {/* Amenities - Multi Select */}
         <CustomFormField
-          fieldType={FormFieldType.SELECT}
+          fieldType={FormFieldType.MULTI_SELECT}
           control={form.control}
           name="amenities"
           label="Amenities"
@@ -165,7 +176,10 @@ const PropertyForm = () => {
             label="Property Images"
             renderSkeleton={(field) => (
               <FormControl>
-                <FileUploader files={field.value} onChange={field.onChange} />
+                <FileUploader
+                  files={field.value || []}
+                  onChange={(files) => field.onChange(files)}
+                />
               </FormControl>
             )}
           />
@@ -178,13 +192,13 @@ const PropertyForm = () => {
           label="Available for Rent"
         />
 
-        <button
+        <Button
           type="submit"
           className="bg-primary-light text-white px-6 py-2 rounded-md w-full"
           disabled={isLoading}
         >
           {isLoading ? "Submitting..." : "Submit Property"}
-        </button>
+        </Button>
       </form>
     </Form>
   );

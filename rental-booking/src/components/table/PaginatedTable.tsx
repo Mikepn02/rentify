@@ -78,20 +78,20 @@ export function DataTable<TData>({
 
   return (
     <div className="w-full bg-white p-4 rounded-md shadow-md">
-      <div className="flex md:flex-row flex-col gap-4 md:gap-0 items-center justify-between py-4">
+      <div className="flex md:flex-row flex-col-reverse gap-4 md:gap-0 items-center justify-between py-4">
         <Input
           placeholder={filterPlaceholder}
           value={(filterColumn?.getFilterValue() as string) ?? ""}
           onChange={(event) => filterColumn?.setFilterValue(event.target.value)}
           className="w-full md:max-w-sm"
         />
-        <div>
+        <div className="w-full md:max-w-sm">
         {addNewComponent}
         </div>
       </div>
 
       <div className="rounded-md">
-        <Table>
+        <Table className="overflow-y-auto">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>

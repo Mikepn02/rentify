@@ -210,7 +210,7 @@ const DashboardLayout: React.FC = () => {
             </div>
           </div>
         </div>
-        <main className="px-4 sm:px-6 lg:px-8 bg-gray-50 py-5 min-h-screen">
+        <main className="px-4 sm:px-6 lg:px-8 bg-gray-50 py-5 min-h-screen scrollbar-hide">
           <Outlet />
         </main>
       </div>

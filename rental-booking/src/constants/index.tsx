@@ -20,6 +20,21 @@ export const PropertyFormDefaultValues = {
   available: true, 
 };
 
+export const AgentFormDefaultValues = {
+  name: "",
+  profileImage: "",
+  role: "",
+  email: "",
+  phoneNumber: "",
+  whatsappNumber: "",
+  about: "",
+  socialMedia: [],
+  slug: "",
+  likedBy: [],
+  comments: [],
+};
+
+
 
 export const navLinks: NavLink[] = [
     {
