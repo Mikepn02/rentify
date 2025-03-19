@@ -2,14 +2,13 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { PropertyFormDefaultValues } from "@/constants";
 import { PropertyFormValidation } from "@/lib/validation";
 import { Form, FormControl } from "../ui/form";
 import CustomFormField, { FormFieldType } from "./CustomFormField";
-import { FileUploader } from "../ui/FileUploader";
 import { SelectItem } from "../ui/select";
 import "react-phone-number-input/style.css";
 import { Button } from "../ui/button";
+import { FileUploader } from "../ui/FileUploader";
 
 const propertyTypeOptions = [
   { value: "apartment", label: "Apartment" },
@@ -30,36 +29,37 @@ const PropertyForm = () => {
 
   const form = useForm<z.infer<typeof PropertyFormValidation>>({
     resolver: zodResolver(PropertyFormValidation),
-    defaultValues: PropertyFormDefaultValues,
+    defaultValues: {
+      available: false,
+    },
   });
 
   const onSubmit = async (values: z.infer<typeof PropertyFormValidation>) => {
     setIsLoading(true);
-    let formData: FormData;
     try {
-      formData = new FormData();
-      if (values.images && values.images?.length > 0) {
-        values.images.forEach((file) => {
-          formData.append("images", file);
-        });
+      const formData = new FormData();
+
+      if (values.images && values.images.length > 0) {
+        values.images.forEach((file) => formData.append("images", file));
       }
 
       formData.append("type", values.type);
-      formData.append("amenties", JSON.stringify(values.amenities));
-      console.log("Form Data: ", formData);  // Console log form data here
-      console.log({
-        ...values,
-        type: values.type, // Already stored as string
-        amenities: Array.isArray(values.amenities)
-          ? values.amenities
-          : [values.amenities],
-      });
+      formData.append("amenities", JSON.stringify(values.amenities));
+      formData.append("price", values.price.toString());
+      formData.append("bedrooms", values.bedrooms.toString());
+      formData.append("bathrooms", values.bathrooms.toString());
+      formData.append("available", values.available.toString());
+
+      console.log("Form Data:", Object.fromEntries(formData));
     } catch (error) {
-      console.log("error: ", error);
+      console.error("Error submitting form:", error);
     } finally {
       setIsLoading(false);
     }
   };
+
+  console.log("Form Errors:", form.formState.errors);
+
 
   return (
     <Form {...form}>
@@ -90,7 +90,7 @@ const PropertyForm = () => {
         />
 
         <CustomFormField
-          fieldType={FormFieldType.INPUT}
+          fieldType={FormFieldType.NUMBER_INPUT}
           control={form.control}
           name="price"
           label="Price"
@@ -113,7 +113,6 @@ const PropertyForm = () => {
           placeholder="(555) 123-4567"
         />
 
-        {/* Property Type - Single Select */}
         <CustomFormField
           fieldType={FormFieldType.SELECT}
           control={form.control}
@@ -128,23 +127,21 @@ const PropertyForm = () => {
           ))}
         </CustomFormField>
 
-        <div className="flex flex-col gap-6 xl:flex-row">
-          <CustomFormField
-            fieldType={FormFieldType.INPUT}
-            control={form.control}
-            name="bedrooms"
-            label="Bedrooms"
-            placeholder="Enter number of bedrooms"
-          />
+        <CustomFormField
+          fieldType={FormFieldType.NUMBER_INPUT}
+          control={form.control}
+          name="bedrooms"
+          label="Bedrooms"
+          placeholder="Enter number of bedrooms"
+        />
 
-          <CustomFormField
-            fieldType={FormFieldType.INPUT}
-            control={form.control}
-            name="bathrooms"
-            label="Bathrooms"
-            placeholder="Enter number of bathrooms"
-          />
-        </div>
+        <CustomFormField
+          fieldType={FormFieldType.NUMBER_INPUT}
+          control={form.control}
+          name="bathrooms"
+          label="Bathrooms"
+          placeholder="Enter number of bathrooms"
+        />
 
         <CustomFormField
           fieldType={FormFieldType.TEXTAREA}
@@ -192,11 +189,7 @@ const PropertyForm = () => {
           label="Available for Rent"
         />
 
-        <Button
-          type="submit"
-          className="bg-primary-light text-white px-6 py-2 rounded-md w-full"
-          disabled={isLoading}
-        >
+        <Button type="submit" disabled={isLoading} className="w-full bg-primary-light hover:bg-primary-light">
           {isLoading ? "Submitting..." : "Submit Property"}
         </Button>
       </form>

@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -29,15 +23,26 @@ model User {
 }
 
 model Property {
-  id            String    @id @default(cuid())
-  title         String
-  description   String
-  hostId        String
-  renter        User      @relation(fields: [hostId], references: [id])
-  pricePerNight String
-  location      String
-  imageUrl      String
-  bookings      Booking[]
+  id          String    @id @default(cuid())
+  title       String
+  description String
+  hostId      String
+  host        User      @relation(fields: [hostId], references: [id])
+  price       Float
+  rating      Float     @default(0.0)
+  reviewCount Int       @default(0)
+  type        String
+  bedrooms    Int
+  bathrooms   Int
+  area        Float
+  location    String
+  amenities   String[]
+  images      String[]
+  available   Boolean   @default(true)
+  bookings    Booking[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime? 
 }
 
 model Booking {
@@ -52,6 +57,20 @@ model Booking {
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 }
+
+model Agent {
+  id           String @id @default(cuid())
+  name         String
+  profileImage String
+  role         String
+  phoneNumber  String
+  likedBy      String
+  comment      String
+  about        String
+}
+
+
+
 
 enum Role {
   RENTER

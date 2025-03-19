@@ -5,14 +5,12 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import {
   Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import useAuth from "@/hooks/useAuth";
+import CustomFormField, {
+  FormFieldType,
+} from "@/components/forms/CustomFormField";
 
 const icons = [
   {
@@ -35,9 +33,10 @@ const formschema = z.object({
   email: z.string().email("Invalid email address."),
   password: z.string().min(8, "Password must be atleast 8 characters"),
   confirmPassword: z.string().min(8, "Password must be atleast 8 characters"),
-  phoneNumber: z.string().optional(),
+  phoneNumber: z.string().min(10, "Phone number must be atleast 10 numbers"),
 });
 const SignUp = () => {
+  const { register } = useAuth();
   const form = useForm<z.infer<typeof formschema>>({
     resolver: zodResolver(formschema),
     defaultValues: {
@@ -50,9 +49,17 @@ const SignUp = () => {
     },
   });
 
-  const onSubmit = (data: z.infer<typeof formschema>) => {
-    console.log(data);
+  const onSubmit = async (data: z.infer<typeof formschema>) => {
+    try {
+      const response = await register(data);
+      console.log("Here is the response: ", response);
+      return response;
+    } catch (error) {
+      console.error(error);
+    }
   };
+
+  console.log(form.formState.errors)
   return (
     <AuthLayout>
       <div className="md:mx-auto max-w-3xl lg:w-[80%]">
@@ -72,108 +79,54 @@ const SignUp = () => {
                 className="space-y-6"
               >
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <FormField
-                    control={form.control}
+                  <CustomFormField
+                    fieldType={FormFieldType.INPUT}
                     name="firstName"
-                    render={({ field }) => (
-                      <FormItem className="w-full">
-                        <FormLabel>First Name</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="text"
-                            placeholder="Your First Name"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
+                    placeholder="Enter your first Name"
                     control={form.control}
+                    label="First Name"
+                  />
+                  <CustomFormField
+                    fieldType={FormFieldType.INPUT}
                     name="lastName"
-                    render={({ field }) => (
-                      <FormItem className="w-full">
-                        <FormLabel>Last Name</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="text"
-                            placeholder="Your Last Name"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    placeholder="Enter your Last Name"
+                    control={form.control}
+                    label="Last Name"
                   />
                 </div>
-                <FormField
-                  control={form.control}
+                <CustomFormField
+                  fieldType={FormFieldType.INPUT}
                   name="email"
-                  render={({ field }) => (
-                    <FormItem className="w-full">
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          placeholder="Your email"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  placeholder="Enter your Email"
+                  control={form.control}
+                  label="Email"
                 />
-                <FormField
+                <CustomFormField
+                  fieldType={FormFieldType.PHONE_INPUT}
                   control={form.control}
                   name="phoneNumber"
-                  render={({ field }) => (
-                    <FormItem className="w-full">
-                      <FormLabel>Phone Number</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          placeholder="Your Phone Number"
-                          {...field}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
+                  label="Phone number"
+                  placeholder="(555) 123-4567"
                 />
 
-                <FormField
-                  control={form.control}
+                <CustomFormField
+                  fieldType={FormFieldType.INPUT}
                   name="password"
-                  render={({ field }) => (
-                    <FormItem className="w-full">
-                      <FormLabel>Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          placeholder="Your Password"
-                          {...field}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <FormField
+                  placeholder="Enter your Password"
                   control={form.control}
-                  name="confirmPassword"
-                  render={({ field }) => (
-                    <FormItem className="w-full">
-                      <FormLabel>Confirm Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          placeholder="Confirm Password"
-                          {...field}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
+                  label="Password"
                 />
-                <Button className="bg-primary-light w-full hover:bg-primary-light">Sign Up</Button>
+                
+                <CustomFormField 
+                    fieldType={FormFieldType.INPUT}
+                    name="confirmPassword"
+                    placeholder="Confirm Password"
+                    control={form.control}
+                    label="Confirm Password"
+                  />
+                <Button type="submit" className="bg-primary-light w-full hover:bg-primary-light">
+                  Sign Up
+                </Button>
               </form>
             </Form>
 
@@ -186,17 +139,21 @@ const SignUp = () => {
             <div className="mx-auto grid grid-cols-3 gap-6 mt-6">
               {icons.map((icon, idx) => (
                 <Button
-                key={idx}
-                className="w-full border bg-transparent flex justify-center items-center p-2 hover:bg-transparent"
-                aria-label={icon.alt}
-              >
-                <img src={icon.icon} alt={icon.alt} className="w-6 h-6" />
-              </Button>
-              
+                  key={idx}
+                  className="w-full border bg-transparent flex justify-center items-center p-2 hover:bg-transparent"
+                  aria-label={icon.alt}
+                >
+                  <img src={icon.icon} alt={icon.alt} className="w-6 h-6" />
+                </Button>
               ))}
             </div>
 
-            <p className="text-gray-primary/75 mt-5 text-center">Already a member? <Link to={'/login'} className="text-primary-light">Login</Link></p>
+            <p className="text-gray-primary/75 mt-5 text-center">
+              Already a member?{" "}
+              <Link to={"/login"} className="text-primary-light">
+                Login
+              </Link>
+            </p>
           </div>
         </div>
       </div>

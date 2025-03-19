@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useState } from "react";
 import { Control } from "react-hook-form";
 import {
   FormControl,
@@ -19,10 +20,11 @@ import {
   SelectValue,
 } from "../ui/select";
 import ReactSelect from "react-select";
-import React from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 export enum FormFieldType {
   INPUT = "input",
+  NUMBER_INPUT = "numberInput",
   TEXTAREA = "textarea",
   PHONE_INPUT = "phoneInput",
   CHECKBOX = "checkbox",
@@ -48,6 +50,7 @@ interface CustomProps {
 }
 
 const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
+  const [showPassword, setShowPassword] = useState(false);
   switch (props.fieldType) {
     case FormFieldType.INPUT:
       return (
@@ -61,22 +64,43 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
               className="ml-2"
             />
           )}
-          <FormControl>
-            <Input
-              placeholder={props.placeholder}
-              {...field}
-              className="h-[44px] border-primary-light focus-visible:ring-0 focus-visible:ring-offset-0 border-0"
-              type={
-                props.name === "bedrooms" ||
-                props.name === "bathrooms" ||
-                props.name === "price"
-                  ? "number"
-                  : "text"
-              }
-              onChange={(e) => field.onChange(Number(e.target.value))}
-            />
+          <FormControl className="relative flex-1">
+            <div>
+              <Input
+                placeholder={props.placeholder}
+                type={
+                  (props.name === "password" || props.name === "confirmPassword")  && !showPassword
+                    ? "password"
+                    : "text"
+                }
+                {...field}
+                className="h-[44px] border-primary-light focus-visible:ring-0 focus-visible:ring-offset-0 border-0"
+              />
+              {(props.name === "password" || props.name === "confirmPassword") && (
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-3 flex items-center text-gray-500"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              )}
+            </div>
           </FormControl>
         </div>
+      );
+
+    case FormFieldType.NUMBER_INPUT:
+      return (
+        <FormControl>
+          <Input
+            type="number"
+            placeholder={props.placeholder}
+            {...field}
+            className="h-[44px] border-primary-light focus-visible:ring-0 focus-visible:ring-offset-0 border-2"
+            onChange={(e) => field.onChange(Number(e.target.value))}
+          />
+        </FormControl>
       );
 
     case FormFieldType.TEXTAREA:
@@ -110,9 +134,9 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
         <div className="flex items-center gap-4">
           <Checkbox
             id={props.name}
-            checked={field.value}
+            checked={!!field.value}
             onCheckedChange={field.onChange}
-            className="text-white data-[state=checked]:bg-blue-500"
+            className="text-white data-[state=checked]:bg-blue-500 data-[state=checked]:border-primary-light"
           />
           <label
             htmlFor={props.name}
@@ -127,11 +151,9 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
       return (
         <FormControl>
           <Select onValueChange={field.onChange} defaultValue={field.value}>
-            <FormControl>
-              <SelectTrigger className="h-[44px] focus:ring-0 focus:ring-offset-0 border-2 border-primary-light">
-                <SelectValue placeholder={props.placeholder} />
-              </SelectTrigger>
-            </FormControl>
+            <SelectTrigger className="h-[44px] focus:ring-0 focus:ring-offset-0 border-2 border-primary-light">
+              <SelectValue>{field.value || props.placeholder}</SelectValue>
+            </SelectTrigger>
             <SelectContent>{props.children}</SelectContent>
           </Select>
         </FormControl>
@@ -157,7 +179,7 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
             onChange={(selected) =>
               field.onChange(selected.map((option) => option.value))
             }
-            className="bg-primary-light"
+            className="border-2 border-primary-light rounded-md"
           />
         </FormControl>
       );
@@ -183,7 +205,6 @@ const CustomFormField = (props: CustomProps) => {
             <FormLabel>{label}</FormLabel>
           )}
           <RenderInput field={field} props={props} />
-
           <FormMessage className="text-red-400" />
         </FormItem>
       )}

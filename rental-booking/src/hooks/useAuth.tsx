@@ -77,7 +77,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
     } catch (error: any) {
       notifications.show({
-        title: "Error",
+        title: error.message,
         message: error.response?.data?.message ?? "An error occured",
         color: "red",
       });
@@ -98,10 +98,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         color: "green",
       });
       navigate("/dashboard");
-    } catch (error) {
+    } catch (error: any) {
       notifications.show({
         title: "Error",
-        message: "Invalid email or password",
+        message: error.response?.data?.message ?? "An error occured",
         color: "red",
       });
     }finally{

@@ -1,21 +1,14 @@
 import AuthLayout from "@/components/layouts/AuthLayout";
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import {
   Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import useAuth from "@/hooks/useAuth";
-import { Eye, EyeOff } from "lucide-react"; // Import Eye Icons
+import CustomFormField, { FormFieldType } from "@/components/forms/CustomFormField";
 
 const icons = [
   {
@@ -39,7 +32,6 @@ const formschema = z.object({
 
 const Login = () => {
   const { login, signInWithGoogle } = useAuth();
-  const [showPassword, setShowPassword] = useState(false); // State for password visibility
 
   const form = useForm<z.infer<typeof formschema>>({
     resolver: zodResolver(formschema),
@@ -73,50 +65,20 @@ const Login = () => {
         <div className="mt-10">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* Email Input */}
-              <FormField
-                control={form.control}
+              <CustomFormField
+                fieldType={FormFieldType.INPUT}
                 name="email"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input type="text" placeholder="Your email" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Password Input with Eye Toggle */}
-              <FormField
+                placeholder="Enter your Email"
                 control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Input
-                          type={showPassword ? "text" : "password"} // Toggle input type
-                          placeholder="Your Password"
-                          {...field}
-                        />
-                        <button
-                          type="button"
-                          className="absolute inset-y-0 right-3 flex items-center text-gray-500"
-                          onClick={() => setShowPassword(!showPassword)}
-                        >
-                          {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                        </button>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                label="Email"
               />
-
-              {/* Login Button */}
+              <CustomFormField
+                fieldType={FormFieldType.INPUT}
+                name="password"
+                placeholder="Enter your Password"
+                control={form.control}
+                label="Password"
+              />
               <Button
                 type="submit"
                 className="bg-primary-light w-full hover:bg-primary-light"

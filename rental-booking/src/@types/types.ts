@@ -208,6 +208,6 @@ export interface User {
   id: string;
   firstName: string;
   lastName: string;
-  phoneNumer: string;
   email: string;
+  phoneNumber:string
 }

@@ -7,6 +7,7 @@ import bodyParser = require("body-parser");
 import helmet from "helmet";
 import swaggerFile from "../swagger-output.json";
 import authRouter from "./routes/auth.routes";
+import userRouter from "./routes/user.routes";
 
 const APP_NAME = "Node.js Express API with Swagger Documentation and TypeScript";
 
@@ -30,6 +31,7 @@ app.get("/", (req , res) => {
 
 app.use("/api-docs", swaggerUi.serve,swaggerUi.setup(swaggerFile))
 app.use("/api/v1/auth", authRouter)
+app.use("/api/v1/user", userRouter)
 
 
 export default app;

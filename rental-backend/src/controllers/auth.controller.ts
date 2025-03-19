@@ -4,6 +4,7 @@ import { comparePassword, hashPassword } from "../utils/bcrypt";
 import { generateToken } from "../utils/jwt";
 import { PrismaClient } from "@prisma/client";
 import passport from "../utils/passport";
+import UserService from "../services/user.service";
 
 const prisma = new PrismaClient();
 
@@ -207,4 +208,17 @@ export default class AuthController {
       console.error("Here is error while getting user: ", error?.message);
     }
   };
+
+  public static getUserById = async(req: Request , res:Response) => {
+    const id = req.params.id
+    try{
+      const user = await UserService.findUserById(id);
+      res.status(200).json({
+        success: true,
+        user
+      })
+    }catch(error: any){
+      console.log("Error while getting user by id: ", error?.message)
+    }
+  }
 }
