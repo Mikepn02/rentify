@@ -41,6 +41,7 @@ export const propertySchema = z.object({
 
 
 export const bookingSchema = z.object({
+  renterId: z.string().uuid("Invalid renter ID"),
   propertyId: z.string().uuid("Invalid property ID"),
   checkInDate: z.preprocess(
     (arg) => (typeof arg === "string" || arg instanceof Date ? new Date(arg) : arg),
