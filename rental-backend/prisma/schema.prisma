@@ -42,7 +42,7 @@ model Property {
   bookings    Booking[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  deletedAt   DateTime? 
+  deletedAt   DateTime?
 }
 
 model Booking {
@@ -53,9 +53,25 @@ model Booking {
   propertyId   String
   checkInDate  DateTime
   checkoutDate DateTime
+  guests       Int
+  totalAmount  Float
   status       BookingStatus
+  paymentId    String
+  payment      Payment?
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
+}
+
+model Payment {
+  id         String        @id @default(cuid())
+  bookingId  String        @unique
+  booking    Booking       @relation(fields: [bookingId], references: [id])
+  cardNumber String
+  expiryDate String
+  cvc        String
+  status     PaymentStatus @default(PENDING)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
 }
 
 model Agent {
@@ -69,9 +85,6 @@ model Agent {
   about        String
 }
 
-
-
-
 enum Role {
   RENTER
   HOST
@@ -81,4 +94,10 @@ enum BookingStatus {
   PENDING
   CONFIRMED
   CANCELED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
 }

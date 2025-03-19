@@ -18,7 +18,8 @@ export const userSchema = z.object({
     .regex(/^(?:\+2507|07)\d{8}$/, "Invalid Rwandan phone number"),
 
   role: z.enum(["HOST", "RENTER"]).default("HOST"),
-});
+})
+
 
 
 export const propertySchema = z.object({
@@ -40,7 +41,6 @@ export const propertySchema = z.object({
 
 
 export const bookingSchema = z.object({
-  renterId: z.string().uuid("Invalid renter ID"),
   propertyId: z.string().uuid("Invalid property ID"),
   checkInDate: z.preprocess(
     (arg) => (typeof arg === "string" || arg instanceof Date ? new Date(arg) : arg),
@@ -48,10 +48,19 @@ export const bookingSchema = z.object({
   ),
   checkoutDate: z.preprocess(
     (arg) => (typeof arg === "string" || arg instanceof Date ? new Date(arg) : arg),
-    z.date().refine((date) => date > new Date(), "Checkout date must be in the future")
+    z.date().refine((date) => date > new Date(), "Checkout date must be after check-in")
   ),
-  status: z.enum(["PENDING", "CONFIRMED", "CANCELED"]).default("PENDING"),
+  guests: z.number().int().positive("Number of guests must be at least 1"),
+  totalAmount: z.number().positive("Total amount must be greater than 0"),
+  cardNumber: z
+    .string()
+    .regex(/^\d{16}$/, "Card number must be 16 digits"),
+  expiryDate: z
+    .string()
+    .regex(/^(0[1-9]|1[0-2])\/\d{2}$/, "Expiry date must be in MM/YY format"),
+  cvc: z.string().regex(/^\d{3,4}$/, "CVC must be 3 or 4 digits"),
 });
+
 
 export const validateUser = (data: User) => {
   const user = userSchema.safeParse(data);
