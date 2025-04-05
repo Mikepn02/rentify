@@ -8,6 +8,8 @@ import helmet from "helmet";
 import swaggerFile from "../swagger-output.json";
 import authRouter from "./routes/auth.routes";
 import userRouter from "./routes/user.routes";
+import propertyRouter from "./routes/property.routes";
+import bookingRouter from "./routes/booking.routes";
 
 const APP_NAME = "Node.js Express API with Swagger Documentation and TypeScript";
 
@@ -32,6 +34,8 @@ app.get("/", (req , res) => {
 app.use("/api-docs", swaggerUi.serve,swaggerUi.setup(swaggerFile))
 app.use("/api/v1/auth", authRouter)
 app.use("/api/v1/user", userRouter)
+app.use("/api/v1/property", propertyRouter)
+app.use("/api/v1/booking", bookingRouter)
 
 
 export default app;

@@ -16,7 +16,7 @@ export default class PropertyService{
             })
 
         }catch(error: any){
-            console.error("Error while creating property: ", error?.message)
+            console.error("Error while creating property: ", error)
         }
     }
 
