@@ -16,14 +16,16 @@ export default class BookingService {
         throw new Error("Property is not available");
       }
 
+      const totalAmount = property.price * bookProperty.guests;
+
       const booking = await primsa.booking.create({
         data: {
           renterId: bookProperty.renterId,
-          propertyId: bookProperty.propertyId,
+          propertyId: bookProperty.propertyId,  
           checkInDate: bookProperty.checkInDate,
           checkoutDate: bookProperty.checkoutDate,
           guests: bookProperty.guests,
-          totalAmount: bookProperty.totalAmount,
+          totalAmount: totalAmount,
           status: "PENDING",
         },
       });
@@ -54,8 +56,7 @@ export default class BookingService {
         const booking = await primsa.booking.findMany({
             where: {
                 renterId
-            },
-            include: { property: true },
+            }
         })
         return booking;
      }catch(error: any){
@@ -78,4 +79,6 @@ export default class BookingService {
         console.error("Error while updating status: ", error?.message)
     }
   }
+
+
 }

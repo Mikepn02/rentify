@@ -34,7 +34,7 @@ app.get("/", (req , res) => {
 app.use("/api-docs", swaggerUi.serve,swaggerUi.setup(swaggerFile))
 app.use("/api/v1/auth", authRouter)
 app.use("/api/v1/user", userRouter)
-app.use("/api/v1/property", propertyRouter)
+app.use("/api/v1/properties", propertyRouter)
 app.use("/api/v1/booking", bookingRouter)
 
 

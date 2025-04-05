@@ -36,10 +36,10 @@ export default class BookingController {
   };
 
   public static getBookingsByRenter = async (req: Request, res: Response) => {
-    const renterId = req.params.renterId;
+    const id = req.params.renterId;
 
     try {
-      const bookings = await BookingService.findBookingById(renterId);
+      const bookings = await BookingService.getBookingsByRenter(id);
       res.status(200).json({
         success: true,
         bookings,

@@ -205,7 +205,7 @@
         }
       }
     },
-    "/api/v1/property/create": {
+    "/api/v1/properties/create": {
       "post": {
         "description": "",
         "parameters": [
@@ -228,7 +228,7 @@
         }
       }
     },
-    "/api/v1/property/{id}": {
+    "/api/v1/properties/{id}": {
       "get": {
         "description": "",
         "parameters": [
@@ -311,7 +311,7 @@
         }
       }
     },
-    "/api/v1/property/": {
+    "/api/v1/properties/": {
       "get": {
         "description": "",
         "parameters": [
@@ -334,7 +334,7 @@
         }
       }
     },
-    "/api/v1/booking/book": {
+    "/api/v1/booking/create": {
       "post": {
         "description": "",
         "parameters": [
@@ -413,7 +413,7 @@
         }
       }
     },
-    "/api/v1/booking/{renterId}": {
+    "/api/v1/booking/renter/{renterId}": {
       "get": {
         "description": "",
         "parameters": [
