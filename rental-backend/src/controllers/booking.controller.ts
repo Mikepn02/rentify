@@ -36,7 +36,11 @@ export default class BookingController {
   };
 
   public static getBookingsByRenter = async (req: Request, res: Response) => {
-    const id = req.params.renterId;
+
+    if(!req.user){
+      throw new Error("User not found")
+    }
+    const id = req.user;
 
     try {
       const bookings = await BookingService.getBookingsByRenter(id);

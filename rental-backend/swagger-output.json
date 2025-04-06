@@ -403,16 +403,10 @@
         }
       }
     },
-    "/api/v1/booking/renter/{renterId}": {
+    "/api/v1/booking/": {
       "get": {
         "description": "",
         "parameters": [
-          {
-            "name": "renterId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
           {
             "name": "authorization",
             "in": "header",
