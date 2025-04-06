@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,6 +10,7 @@ import { SelectItem } from "../ui/select";
 import "react-phone-number-input/style.css";
 import { Button } from "../ui/button";
 import { FileUploader } from "../ui/FileUploader";
+import useProperties from "@/hooks/useProperties";
 
 const propertyTypeOptions = [
   { value: "apartment", label: "Apartment" },
@@ -26,6 +28,8 @@ const amenitiesOptions = [
 
 const PropertyForm = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const { createProperty } = useProperties()
+
 
   const form = useForm<z.infer<typeof PropertyFormValidation>>({
     resolver: zodResolver(PropertyFormValidation),
@@ -37,27 +41,16 @@ const PropertyForm = () => {
   const onSubmit = async (values: z.infer<typeof PropertyFormValidation>) => {
     setIsLoading(true);
     try {
-      const formData = new FormData();
-
-      if (values.images && values.images.length > 0) {
-        values.images.forEach((file) => formData.append("images", file));
-      }
-
-      formData.append("type", values.type);
-      formData.append("amenities", JSON.stringify(values.amenities));
-      formData.append("price", values.price.toString());
-      formData.append("bedrooms", values.bedrooms.toString());
-      formData.append("bathrooms", values.bathrooms.toString());
-      formData.append("available", values.available.toString());
-
-      console.log("Form Data:", Object.fromEntries(formData));
+      console.log("Form Values:", values);
+      //@ts-expect-error
+      await createProperty(values);
     } catch (error) {
       console.error("Error submitting form:", error);
     } finally {
       setIsLoading(false);
     }
   };
-
+  
   console.log("Form Errors:", form.formState.errors);
 
 
@@ -126,6 +119,13 @@ const PropertyForm = () => {
             </SelectItem>
           ))}
         </CustomFormField>
+        <CustomFormField
+          fieldType={FormFieldType.NUMBER_INPUT}
+          control={form.control}
+          name="area"
+          label="Area (sq ft)"
+          placeholder="Enter property area"
+        />
 
         <CustomFormField
           fieldType={FormFieldType.NUMBER_INPUT}

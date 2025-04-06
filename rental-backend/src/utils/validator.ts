@@ -25,7 +25,7 @@ export const userSchema = z.object({
 export const propertySchema = z.object({
   title: z.string().min(3, "Title should be at least 3 characters long"),
   description: z.string().min(10, "Description should be at least 10 characters long"),
-  hostId: z.string().cuid("Invalid host ID"),
+  hostId: z.string().cuid("Invalid Host ID").optional(),
   price: z.coerce.number().positive(),  
   rating: z.coerce.number().min(0).max(5).default(0),
   reviewCount: z.coerce.number().int().min(0).default(0),
@@ -36,7 +36,8 @@ export const propertySchema = z.object({
   location: z.string().min(5, "Location should be at least 5 characters long"),
   amenities: z.array(z.string()).nonempty("Amenities cannot be empty"),
   images: z.array(z.string().url()).nonempty("At least one image is required"),
-  available: z.boolean().default(true),
+  available: z.coerce.boolean().default(true),
+
 });
 
 

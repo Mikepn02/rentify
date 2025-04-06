@@ -13,8 +13,9 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { propertyColumns, propertyData } from "./Properties";
+import { propertyColumns} from "./Properties";
 import useAuth from "@/hooks/useAuth";
+import useProperties from "@/hooks/useProperties";
 
 
 
@@ -31,6 +32,7 @@ const bookingsData = [
 const Overview = () => {
   const greeting = getGreeting();
   const { user } = useAuth();
+  const { properties: propertyData } = useProperties()
   
 
   return (
@@ -159,7 +161,7 @@ const Overview = () => {
       </div>
 
       <div className="w-full rounded-xl py-10">
-        <DataTable data={propertyData} columns={propertyColumns} filterPlaceholder="Filter Properties...." />
+        <DataTable data={propertyData ?? []} columns={propertyColumns} filterPlaceholder="Filter Properties...." />
       </div>
 
       

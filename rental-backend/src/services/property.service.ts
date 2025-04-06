@@ -7,13 +7,20 @@ const prisma = new PrismaClient();
 export default class PropertyService{
     
 
-    public static createProperty = async(data: any) => {
+    public static createProperty = async(userId: string,data: any) => {
         try{
 
             const property = validateProperty(data);
-            return await prisma.property.create({
-                data: property
+            const newProperty = await prisma.property.create({
+                data: {
+                    ...property,
+                    hostId: userId,
+                }
             })
+
+            console.log("New property created: ", newProperty)
+
+            return newProperty;
 
         }catch(error: any){
             console.error("Error while creating property: ", error)

@@ -8,6 +8,13 @@ export default class PropertyController {
      */
 
   public static createProperty = async (req: Request, res: Response) => {
+
+    if(!req.user){
+      throw new Error("User not authenticated");
+    }
+    //@ts-ignore
+    const userId = req.user;
+    console.log("User ID: ", userId);
     try {
       const files = req.files as Express.Multer.File[];
 
@@ -34,7 +41,7 @@ export default class PropertyController {
       }
       
       console.log("Property data: ", propertyData);
-      const newProperty = await PropertyService.createProperty(propertyData);
+      const newProperty = await PropertyService.createProperty(userId,propertyData);
       res.status(200).json({
         success: true,
         message: "Property created successfully",

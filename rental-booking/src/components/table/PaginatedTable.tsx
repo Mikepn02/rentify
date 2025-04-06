@@ -11,9 +11,8 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import {  ChevronLeft, ChevronRight,} from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -23,7 +22,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
 
 const ITEMS_PER_PAGE = 5;
 
@@ -38,7 +36,7 @@ export function DataTable<TData>({
   data,
   columns,
   filterPlaceholder = "Search...",
-  addNewComponent
+  addNewComponent,
 }: DataTableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -70,61 +68,76 @@ export function DataTable<TData>({
     },
   });
 
-  
   const firstFilterableColumn = columns.find(
-    (col): col is ColumnDef<TData> & { accessorKey: string } => "accessorKey" in col
-  )?.accessorKey;  
-  const filterColumn = firstFilterableColumn ? table.getColumn(firstFilterableColumn) : null;
+    (col): col is ColumnDef<TData> & { accessorKey: string } =>
+      "accessorKey" in col
+  )?.accessorKey;
+  const filterColumn = firstFilterableColumn
+    ? table.getColumn(firstFilterableColumn)
+    : null;
 
   return (
     <div className="w-full bg-white p-4 rounded-md shadow-md">
-      <div className="flex md:flex-row flex-col-reverse gap-4 md:gap-0 items-center justify-between py-4">
+      {/* Filter + Add New */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-4">
         <Input
           placeholder={filterPlaceholder}
           value={(filterColumn?.getFilterValue() as string) ?? ""}
           onChange={(event) => filterColumn?.setFilterValue(event.target.value)}
           className="w-full md:max-w-sm"
         />
-        <div className="w-full md:max-w-sm">
-        {addNewComponent}
-        </div>
+        <div className="w-full md:max-w-sm">{addNewComponent}</div>
       </div>
 
-      <div className="rounded-md">
-        <Table className="overflow-y-auto">
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
+      <div className="w-full overflow-x-auto scrollbar-hide">
+        <div className="min-w-max">
+          <Table className="table-auto w-full">
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
                   ))}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow key={row.id}>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell
+                        key={cell.id}
+                        className="whitespace-nowrap text-sm"
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
 
       <div className="flex items-center justify-end space-x-2 py-4">

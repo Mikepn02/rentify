@@ -4,7 +4,7 @@ import { z } from "zod";
 
 
 export const PropertyFormValidation = z.object({
-    id: z.string().uuid().optional(),
+    id: z.string().cuid().optional(),
     title: z.string().min(3, "Title must be at least 3 characters long"),
     location: z.string().min(3, "Location must be at least 3 characters long"),
     price: z.number().min(0, "Price must be a positive number"),
@@ -16,7 +16,13 @@ export const PropertyFormValidation = z.object({
     area: z.number().min(1, "Area must be greater than 0").optional(),
     description: z.string().min(10, "Description must be at least 10 characters long"),
     amenities: z.array(z.string()).nonempty("At least one amenity is required"),
-    images: z.array(z.string().url()).optional(),
+    images: z
+  .any()
+  .refine((val) => Array.isArray(val) && val.every((file) => file instanceof File), {
+    message: "Please upload valid image files",
+  })
+  .optional(),
+
     available: z.boolean(),
   });
 
