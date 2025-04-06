@@ -15,9 +15,6 @@ export default class BookingService {
       if (!property?.available) {
         throw new Error("Property is not available");
       }
-
-      console.log(bookProperty);
-
       const totalAmount = property.price * bookProperty.guests;
 
       const booking = await primsa.booking.create({
