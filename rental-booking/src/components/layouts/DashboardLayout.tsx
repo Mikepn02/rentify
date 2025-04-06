@@ -103,9 +103,9 @@ const DashboardLayout: React.FC = () => {
                 <li>
                   <Button
                     variant="outline"
-                    className="w-full bg-transparent border-none text-white hover:bg-blue-200 hover:text-white group flex items-center gap-x-3 rounded-md p-2 text-sm font-semibold transition-all"
+                    className="w-full bg-transparent border-none text-white hover:bg-blue-200 hover:text-white group flex justify-start items-center gap-x-3 rounded-md p-2 text-sm font-semibold transition-all"
                     onClick={() => {
-                      logout();
+                      logout()
                       setSidebarOpen(false);
                     }}
                   >
@@ -173,7 +173,7 @@ const DashboardLayout: React.FC = () => {
             <li>
               <Button
                 variant="outline"
-                className="w-full bg-transparent border-none text-white hover:bg-transparent hover:text-white group flex items-center gap-x-3 rounded-md p-2 text-sm font-semibold transition-all"
+                className="w-full bg-transparent border-none text-white hover:bg-transparent hover:text-white group flex justify-start items-center gap-x-3 rounded-md p-2 text-sm font-semibold transition-all"
                 onClick={logout}
               >
                 <LogOut className="h-5 w-5 xl:h-6 xl:w-6" />

@@ -3,15 +3,17 @@ import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { getPropertyById, getBookingsByPropertyId } from '@/lib/data';
+import { getBookingsByPropertyId } from '@/lib/data';
 import { Calendar, MapPin, User, Home, Bath, Maximize } from 'lucide-react';
 import PageTransition from '@/components/layouts/PageTransition';
 import { Badge } from '@/components/ui/Badge';
 import BookingCalendar from '@/components/ui/BookingCalendar';
+import useProperties from '@/hooks/useProperties';
 
 const PropertyDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { getPropertyById } = useProperties()
   const [currentImage, setCurrentImage] = useState(0);
   const [selectedDates, setSelectedDates] = useState<{ 
     startDate?: Date; 

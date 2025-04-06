@@ -9,7 +9,7 @@ const router = Router();
 
 router.post("/create", isAuthenticated,upload.array("images"), PropertyController.createProperty);
 router.get("/:id", isAuthenticated, PropertyController.getPropertyById);
-router.get("/", isAuthenticated, PropertyController.getAllProperties);
+router.get("/", PropertyController.getAllProperties);
 router.patch("/:id", isAuthenticated, PropertyController.updateProperty);
 router.delete("/:id", isAuthenticated, PropertyController.deleteProperty);
 

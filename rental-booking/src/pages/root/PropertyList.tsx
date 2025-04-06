@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { properties, Property } from "@/lib/data";
+import {  properties as data ,Property } from "@/lib/data";
 import {
   Select,
   SelectContent,
@@ -14,19 +14,23 @@ import PageTransition from "@/components/layouts/PageTransition";
 import { Slider } from "@/components/ui/Slider";
 import { Button } from "@/components/ui/button";
 import PropertyCard from "@/components/cards/PropertyCard";
+import useProperties from "@/hooks/useProperties";
 
 const PropertyList = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { properties} = useProperties();
   const [isLoaded, setIsLoaded] = useState(false);
   const [filteredProperties, setFilteredProperties] =
-    useState<Property[]>(properties);
+    useState<Property[]>(properties ?? []);
 
   // Filter states
   const [priceRange, setPriceRange] = useState<number[]>([0, 1000]);
   const [propertyType, setPropertyType] = useState<string>("");
   const [bedrooms, setBedrooms] = useState<string>("");
   const [bathrooms, setBathrooms] = useState<string>("");
+
+
 
   useEffect(() => {
     setIsLoaded(true);
@@ -35,14 +39,17 @@ const PropertyList = () => {
     const params = new URLSearchParams(location.search);
     const typeParam = params.get("type");
 
-    if (typeParam) {
+    if (typeParam){
       setPropertyType(typeParam);
     }
   }, [location.search]);
 
   useEffect(() => {
+    
+    console.log("Properties loaded:", properties);
+    
     // Apply filters
-    let result = properties;
+    let result = properties ?? [];
 
     if (propertyType) {
       result = result.filter((property) => property.type === propertyType);
@@ -99,7 +106,7 @@ const PropertyList = () => {
 
   const locationGroups = Array.from(
     new Set(
-      properties.map((property) => property.location.split(",")[1]?.trim())
+      (properties ?? []).map((property) => property.location.split(",")[1]?.trim())
     )
   ).filter(Boolean);
 

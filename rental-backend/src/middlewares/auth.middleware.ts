@@ -23,7 +23,6 @@ export const isAuthenticated = (
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  console.log("Payload: ", payload);
 
   req.user = payload;
   next();
