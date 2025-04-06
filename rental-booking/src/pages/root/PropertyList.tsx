@@ -1,14 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-
-import {  properties as data ,Property } from "@/lib/data";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Property } from "@/lib/data";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MapPin } from "lucide-react";
 import PageTransition from "@/components/layouts/PageTransition";
 import { Slider } from "@/components/ui/Slider";
@@ -19,10 +12,8 @@ import useProperties from "@/hooks/useProperties";
 const PropertyList = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { properties} = useProperties();
+  const { properties } = useProperties();
   const [isLoaded, setIsLoaded] = useState(false);
-  const [filteredProperties, setFilteredProperties] =
-    useState<Property[]>(properties ?? []);
 
   // Filter states
   const [priceRange, setPriceRange] = useState<number[]>([0, 1000]);
@@ -30,54 +21,45 @@ const PropertyList = () => {
   const [bedrooms, setBedrooms] = useState<string>("");
   const [bathrooms, setBathrooms] = useState<string>("");
 
-
-
   useEffect(() => {
     setIsLoaded(true);
 
-    // Parse query parameters
     const params = new URLSearchParams(location.search);
     const typeParam = params.get("type");
 
-    if (typeParam){
+    if (typeParam) {
       setPropertyType(typeParam);
     }
   }, [location.search]);
 
-  useEffect(() => {
-    
-    console.log("Properties loaded:", properties);
-    
-    // Apply filters
-    let result = properties ?? [];
+  const filteredProperties = useMemo(() => {
+    if (!properties || properties.length === 0) return [];
 
-    if (propertyType) {
-      result = result.filter((property) => property.type === propertyType);
-    }
+    return properties.filter((property) => {
+      const matchesType = propertyType ? property.type === propertyType : true;
+      const matchesBedrooms = bedrooms
+        ? bedrooms === "4+"
+          ? property.bedrooms >= 4
+          : property.bedrooms === parseInt(bedrooms)
+        : true;
+      const matchesBathrooms = bathrooms
+        ? bathrooms === "3+"
+          ? property.bathrooms >= 3
+          : property.bathrooms === parseInt(bathrooms)
+        : true;
+      const matchesPrice = property.price >= priceRange[0] && property.price <= priceRange[1];
 
-    if (bedrooms) {
-      result = result.filter(
-        (property) =>
-          property.bedrooms === parseInt(bedrooms) ||
-          (bedrooms === "4+" && property.bedrooms >= 4)
-      );
-    }
+      return matchesType && matchesBedrooms && matchesBathrooms && matchesPrice;
+    });
+  }, [properties, propertyType, bedrooms, bathrooms, priceRange]);
 
-    if (bathrooms) {
-      result = result.filter(
-        (property) =>
-          property.bathrooms === parseInt(bathrooms) ||
-          (bathrooms === "3+" && property.bathrooms >= 3)
-      );
-    }
 
-    result = result.filter(
-      (property) =>
-        property.price >= priceRange[0] && property.price <= priceRange[1]
-    );
-
-    setFilteredProperties(result);
-  }, [propertyType, bedrooms, bathrooms, priceRange]);
+  const locationGroups = useMemo(() => {
+    if (!properties) return [];
+    return Array.from(
+      new Set(properties.map((property) => property.location.split(",")[1]?.trim()))
+    ).filter(Boolean);
+  }, [properties]);
 
   const applyFilter = (type: string, value: string) => {
     if (type === "type") {
@@ -103,12 +85,6 @@ const PropertyList = () => {
     setBathrooms("");
     navigate("/properties");
   };
-
-  const locationGroups = Array.from(
-    new Set(
-      (properties ?? []).map((property) => property.location.split(",")[1]?.trim())
-    )
-  ).filter(Boolean);
 
   return (
     <PageTransition>
@@ -142,9 +118,7 @@ const PropertyList = () => {
                     <div className="space-y-6">
                       {/* Price Range */}
                       <div>
-                        <h3 className="text-sm font-medium mb-4">
-                          Price Range
-                        </h3>
+                        <h3 className="text-sm font-medium mb-4">Price Range</h3>
                         <div className="px-2">
                           <Slider
                             defaultValue={[0, 1000]}
@@ -163,9 +137,7 @@ const PropertyList = () => {
 
                       {/* Property Type */}
                       <div>
-                        <h3 className="text-sm font-medium mb-3">
-                          Property Type
-                        </h3>
+                        <h3 className="text-sm font-medium mb-3">Property Type</h3>
                         <Select
                           value={propertyType}
                           onValueChange={(value) => applyFilter("type", value)}
@@ -174,7 +146,6 @@ const PropertyList = () => {
                             <SelectValue placeholder="Any type" />
                           </SelectTrigger>
                           <SelectContent>
-                            {/* Use null for an empty value or avoid this item */}
                             <SelectItem value="0">Any type</SelectItem>
                             <SelectItem value="Villa">Villa</SelectItem>
                             <SelectItem value="House">House</SelectItem>
@@ -226,30 +197,19 @@ const PropertyList = () => {
 
                       {/* Locations */}
                       <div>
-                        <h3 className="text-sm font-medium mb-3">
-                          Popular Locations
-                        </h3>
+                        <h3 className="text-sm font-medium mb-3">Popular Locations</h3>
                         <div className="space-y-2">
                           {locationGroups.map((location) => (
-                            <div
-                              key={location}
-                              className="flex items-center gap-2"
-                            >
+                            <div key={location} className="flex items-center gap-2">
                               <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
-                              <span className="text-sm text-muted-foreground">
-                                {location}
-                              </span>
+                              <span className="text-sm text-muted-foreground">{location}</span>
                             </div>
                           ))}
                         </div>
                       </div>
 
                       {/* Reset Filters */}
-                      <Button
-                        variant="outline"
-                        className="w-full mt-4"
-                        onClick={resetFilters}
-                      >
+                      <Button variant="outline" className="w-full mt-4" onClick={resetFilters}>
                         Reset Filters
                       </Button>
                     </div>
@@ -261,9 +221,7 @@ const PropertyList = () => {
                   <div className="flex justify-between items-center mb-6">
                     <h2 className="text-xl font-medium">
                       {filteredProperties.length}{" "}
-                      {filteredProperties.length === 1
-                        ? "Property"
-                        : "Properties"}
+                      {filteredProperties.length === 1 ? "Property" : "Properties"}
                     </h2>
                     <Select defaultValue="featured">
                       <SelectTrigger className="w-[180px]">
@@ -296,9 +254,7 @@ const PropertyList = () => {
                     </div>
                   ) : (
                     <div className="bg-accent rounded-xl p-12 text-center">
-                      <h3 className="text-xl font-medium mb-2">
-                        No properties found
-                      </h3>
+                      <h3 className="text-xl font-medium mb-2">No properties found</h3>
                       <p className="text-muted-foreground mb-6">
                         Try adjusting your filters to find more properties.
                       </p>

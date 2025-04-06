@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import PropertyCard from "../cards/PropertyCard";
 import { Button } from "../ui/button";
-import { properties } from "../../constants";
+import useProperties from "@/hooks/useProperties";
+
 
 const FeaturedProperties = () => {
   const [isLoaded, setIsLoaded] = useState(false);
 
-  console.log("Here are all properties: ", properties);
+  const { properties } = useProperties();
 
   useEffect(() => {
     setIsLoaded(true);
@@ -39,7 +40,7 @@ const FeaturedProperties = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-              {properties.map((property, index) => (
+              {properties?.map((property, index) => (
                 <div
                   key={property.id}
                   className={`transition-all duration-700 transform ${

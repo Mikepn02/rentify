@@ -4,34 +4,44 @@ import { navLinks } from "../../constants"; // Assuming you have a 'constants' f
 import { Button } from "./button"; // Button component that you already have.
 import { Bars3Icon } from "@heroicons/react/24/outline"; // Mobile menu icon from Heroicons.
 import { Sheet, SheetContent } from "./sheet"; // Assuming you're using a sheet component for mobile menu.
+import useAuth from "@/hooks/useAuth";
 
 const Navbar = () => {
-  const [scrolled , setScrolled] = useState(false)
+  const [scrolled, setScrolled] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
-      if(window.scrollY > 10){
-        setScrolled(true)
-      }else{
-        setScrolled(false)
+      if (window.scrollY > 10) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
       }
-    }
+    };
 
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll)
-  },[])
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <div className={`fixed top-0 right-0 left-0 z-50 transition-all w-full duration-300 px-6 lg:px-10${
-      scrolled ? 'bg-white/90 backdrop-blur-md shadow-lg py-3': 'bg-transparent py-6'
-    }`}>
+    <div
+      className={`fixed top-0 right-0 left-0 z-50 transition-all w-full duration-300 px-6 lg:px-10${
+        scrolled
+          ? "bg-white/90 backdrop-blur-md shadow-lg py-3"
+          : "bg-transparent py-6"
+      }`}
+    >
       {/* MOBILE NAVBAR */}
       <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
         <SheetContent className="w-80 bg-primary-light flex flex-col justify-center px-6 pb-6 overflow-y-auto space-y-5">
           <Link to="/" className="text-2xl font-bold text-gray-800">
             <div className="flex items-center cursor-pointer -ml-2">
-              <img src="/icons/logo_white.svg" alt="logo" className="w-10 h-10 mr-2" />
+              <img
+                src="/icons/logo_white.svg"
+                alt="logo"
+                className="w-10 h-10 mr-2"
+              />
               <p className="text-[18px] text-white lg:text-black lg:text-xl font-bold">
                 Rentify Properties
               </p>
@@ -42,7 +52,11 @@ const Navbar = () => {
               <Link
                 to={link.href}
                 key={index}
-                className={`${scrolled ? 'font-bold hover:text-blue-500 text-white' : "text-white"}`}
+                className={`${
+                  scrolled
+                    ? "font-bold hover:text-blue-500 text-white"
+                    : "text-white"
+                }`}
               >
                 {link.title}
               </Link>
@@ -86,21 +100,47 @@ const Navbar = () => {
             <Link
               to={link.href}
               key={index}
-              className={`${scrolled ? 'text-heading-1 font-bold hover:text-blue-500' : 'text-heading-2 font-bold'}`}
+              className={`${
+                scrolled
+                  ? "text-heading-1 font-bold hover:text-blue-500"
+                  : "text-heading-2 font-bold"
+              }`}
             >
               {link.title}
             </Link>
           ))}
-          <Link to={"/login"}>
-            <Button className="bg-primary-light text-white px-4 py-2 rounded-full hover:bg-primary-light">
-              Sign in
-            </Button>
-          </Link>
-          <Link to={"/signup"}>
-            <Button className={`bg-transparent px-4 py-2 rounded-full  hover:bg-primary-light ${scrolled ? 'border-none bg-primary-light text-white' :'bg-primary-light'}`}>
-              Sign up
-            </Button>
-          </Link>
+          {user ? (
+            <Link to={"/properties"}>
+              <Button
+                className={`bg-transparent px-4 py-2 rounded-full  hover:bg-primary-light ${
+                  scrolled
+                    ? "border-none bg-primary-light text-white"
+                    : "bg-primary-light"
+                }`}
+              >
+                Book Now
+              </Button>
+            </Link>
+          ) : (
+            <>
+              <Link to={"/login"}>
+                <Button className="bg-primary-light text-white px-4 py-2 rounded-full hover:bg-primary-light">
+                  Sign in
+                </Button>
+              </Link>
+              <Link to={"/signup"}>
+                <Button
+                  className={`bg-transparent px-4 py-2 rounded-full  hover:bg-primary-light ${
+                    scrolled
+                      ? "border-none bg-primary-light text-white"
+                      : "bg-primary-light"
+                  }`}
+                >
+                  Sign up
+                </Button>
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </div>
