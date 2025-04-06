@@ -21,7 +21,15 @@ export default function useBooking() {
     error,
     mutate,
   } = useSWR<Booking[]>("/booking", async (url: string) => {
-    if (!user) return;
+    if (!user){
+        toast({
+            title: "Something went wrong",
+            description: "Login to Book a property",
+            open: true,
+            onOpenChange: () => {},
+          });
+        return;
+    }
     const { data } = await axios.get(url);
     return data.bookings;
   });
@@ -42,7 +50,22 @@ export default function useBooking() {
         navigate("/properties");
     }
     return booking;
-};
+  };
+
+  const getBookingsByPropertyId = (propertyId: string): Booking[] => {
+    if (!bookings) return [];  
+    const booking = bookings.filter((booking) => booking.propertyId === propertyId);
+    if (!booking) {
+      toast({
+        title: "Booking",
+        description: "Your booking was successful.",
+        open: true,
+        onOpenChange: () => {},
+      });
+      navigate("/properties");
+    }
+    return booking;
+  };
 
   const createBooking = async (booking: Omit<Booking, "id">) => {
     setBookingProperty(true);
@@ -151,6 +174,7 @@ export default function useBooking() {
     updateBooking,
     getBookingById,
     deleteBooking,
+    getBookingsByPropertyId,
     bookingProperty,
     deletingBooking,
     updatingBooking,

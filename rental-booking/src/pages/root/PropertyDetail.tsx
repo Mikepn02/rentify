@@ -3,12 +3,12 @@ import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { getBookingsByPropertyId } from '@/lib/data';
 import { Calendar, MapPin, User, Home, Bath, Maximize } from 'lucide-react';
 import PageTransition from '@/components/layouts/PageTransition';
 import { Badge } from '@/components/ui/Badge';
 import BookingCalendar from '@/components/ui/BookingCalendar';
 import useProperties from '@/hooks/useProperties';
+import useBooking from '@/hooks/useBooking';
 
 const PropertyDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -21,13 +21,14 @@ const PropertyDetail = () => {
     nights: number; 
     totalPrice: number;
   }>({ nights: 0, totalPrice: 0 });
+  const { getBookingsByPropertyId } = useBooking();
   
   const property = id ? getPropertyById(id) : undefined;
   const bookings = id ? getBookingsByPropertyId(id) : [];
   
   useEffect(() => {
     if (!property) {
-      navigate('/listings');
+      navigate('/properties');
     }
     
     window.scrollTo(0, 0);

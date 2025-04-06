@@ -34,7 +34,7 @@ const FeaturedProperties = () => {
                   each offering a unique experience.
                 </p>
               </div>
-              <Link to="/listings" className="mt-4 md:mt-0">
+              <Link to="/properties" className="mt-4 md:mt-0">
                 <Button variant="outline">View All Properties</Button>
               </Link>
             </div>
@@ -202,7 +202,7 @@ const FeaturedProperties = () => {
               setting for your next getaway.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link to="/listings">
+              <Link to="/properties">
                 <Button className="h-12 px-8 bg-white text-primary hover:bg-white/90">
                   Explore Properties
                 </Button>

@@ -1,34 +1,46 @@
 import { DataTable } from "@/components/table/PaginatedTable";
+import useBooking from "@/hooks/useBooking";
 import { ColumnDef } from "@tanstack/react-table";
 
 type Booking = {
   id: string;
-  customer: string;
-  checkIn: string;
-  checkOut: string;
+  firstName: string;
+  lastName: string;
+  checkInDate: string;
+  checkoutDate: string;
   status: "pending" | "confirmed" | "cancelled";
 };
 
-const bookingData: Booking[] = [
-  { id: "b1", customer: "Alice Johnson", checkIn: "2024-03-10", checkOut: "2024-03-15", status: "confirmed" },
-  { id: "b2", customer: "Bob Smith", checkIn: "2024-04-01", checkOut: "2024-04-05", status: "pending" },
-];
-
 const bookingColumns: ColumnDef<Booking>[] = [
   {
-    accessorKey: "customer",
-    header: "Customer",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("customer")}</div>,
+    accessorKey: "propertyId",
+    header: "Property",
+    cell: ({ row }) => (
+      <div className="capitalize">
+        {row.getValue("propertyId")}
+      </div>
+    ),
   },
   {
-    accessorKey: "checkIn",
+    accessorKey: "checkInDate",
     header: "Check-in",
-    cell: ({ row }) => <div>{row.getValue("checkIn")}</div>,
+    cell: ({ row }) => (
+      <div>{new Date(row.getValue("checkInDate")).toLocaleDateString()}</div>
+    ),
   },
   {
-    accessorKey: "checkOut",
+    accessorKey: "checkoutDate",
     header: "Check-out",
-    cell: ({ row }) => <div>{row.getValue("checkOut")}</div>,
+    cell: ({ row }) => (
+      <div>{new Date(row.getValue("checkoutDate")).toLocaleDateString()}</div>
+    ),
+  },
+  {
+    accessorKey: "guests",
+    header: "Guests",
+    cell: ({ row }) => (
+      <div className="font-bold">{row.getValue("guests")}</div>
+    ),
   },
   {
     accessorKey: "status",
@@ -38,5 +50,18 @@ const bookingColumns: ColumnDef<Booking>[] = [
 ];
 
 export default function Bookings() {
-  return <DataTable data={bookingData} columns={bookingColumns} filterPlaceholder="Filter bookings..." />;
+  const { bookings } = useBooking();
+
+  // If no bookings are available, display a loading message
+  if (!bookings) {
+    return <div>Loading bookings...</div>;
+  }
+
+  return (
+    <DataTable
+      data={bookings}
+      columns={bookingColumns}
+      filterPlaceholder="Filter bookings..."
+    />
+  );
 }

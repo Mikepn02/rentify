@@ -7,8 +7,12 @@ export default class BookingController {
      */
 
   public static bookProperty = async (req: Request, res: Response) => {
+    if(!req.user){
+      throw new Error("User not authorized")
+    }
+    const renterId = req.user
     try {
-      const booking = await BookingService.createBooking(req.body);
+      const booking = await BookingService.createBooking(renterId ,req.body);
       res.status(201).json({
         success: true,
         booking,

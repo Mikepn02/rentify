@@ -3,7 +3,7 @@ import { validateBooking } from "../utils/validator";
 
 const primsa = new PrismaClient();
 export default class BookingService {
-  public static createBooking = async (data: any) => {
+  public static createBooking = async (renterId: string ,data: any) => {
     try {
       const bookProperty = validateBooking(data);
       const property = await primsa.property.findUnique({
@@ -16,11 +16,13 @@ export default class BookingService {
         throw new Error("Property is not available");
       }
 
+      console.log(bookProperty);
+
       const totalAmount = property.price * bookProperty.guests;
 
       const booking = await primsa.booking.create({
         data: {
-          renterId: bookProperty.renterId,
+          renterId: renterId,
           propertyId: bookProperty.propertyId,  
           checkInDate: bookProperty.checkInDate,
           checkoutDate: bookProperty.checkoutDate,
@@ -32,7 +34,7 @@ export default class BookingService {
 
       return booking;
     } catch (error: any) {
-      console.error("Error while booking property: ", error?.message);
+      console.error("Error while booking property: ", error);
     }
   };
 

@@ -132,7 +132,7 @@ const HomeBanner = () => {
                   : "translateY(0)",
               }}
             >
-              <Link to="/listings">
+              <Link to="/properties">
                 <Button className="h-12 px-6 text-base bg-white text-foreground hover:bg-white/90">
                   Browse Properties
                 </Button>
