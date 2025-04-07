@@ -2,21 +2,11 @@ import { useState } from "react";
 import { DataTable } from "@/components/table/PaginatedTable";
 import useBooking from "@/hooks/useBooking";
 import { ColumnDef } from "@tanstack/react-table";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, Filter, PlusCircle, Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { CalendarIcon} from "lucide-react";
 
-type Booking = {
-  id: string;
-  propertyId: string;
-  propertyName: string;
-  checkInDate: string;
-  checkoutDate: string;
-  guests: number;
-  status: "pending" | "confirmed" | "cancelled";
-  totalAmount: number;
-};
+import { Booking } from "@/lib/data";
 
 const BookingStatusBadge = ({ status }: { status: string }) => {
   const statusStyles = {
@@ -36,15 +26,16 @@ const BookingStatusBadge = ({ status }: { status: string }) => {
 
 const bookingColumns: ColumnDef<Booking>[] = [
   {
-    accessorKey: "propertyName",
+    accessorFn: (row) => row.property.title,
+    id: "propertyName",
     header: "Property",
     cell: ({ row }) => (
       <div className="font-medium text-gray-900">
-        {row.getValue("propertyName")}
-        <div className="text-xs text-gray-500">ID: {row.original.propertyId}</div>
+        {row.original.property.title}
       </div>
     ),
-  },
+  },  
+
   {
     accessorKey: "checkInDate",
     header: "Check-in",
@@ -81,14 +72,14 @@ const bookingColumns: ColumnDef<Booking>[] = [
   },
   {
     accessorKey: "guests",
-    header: "Guests",
+    header: () => <div className="text-center">Guests</div>,
     cell: ({ row }) => (
-      <div className="font-medium text-center">{row.getValue("guests")}</div>
+      <div className="text-center font-medium">{row.getValue("guests")}</div>
     ),
   },
   {
     accessorKey: "totalAmount",
-    header: "Amount",
+    header: () => <div className="text-right">Amount</div>,
     cell: ({ row }) => {
       const amount = parseFloat(row.getValue("totalAmount"));
       const formatted = new Intl.NumberFormat('en-US', {
@@ -96,18 +87,19 @@ const bookingColumns: ColumnDef<Booking>[] = [
         currency: 'USD',
       }).format(amount);
       
-      return <div className="font-medium text-right">{formatted}</div>;
+      return <div className="text-right font-medium">{formatted}</div>;
     },
   },
   {
     accessorKey: "status",
-    header: "Status",
+    header: () => <div className="text-center">Status</div>,
     cell: ({ row }) => (
-      <div className="flex justify-center">
+      <div className="flex justify-center items-center">
         <BookingStatusBadge status={row.getValue("status")} />
       </div>
     ),
   },
+  
   {
     id: "actions",
     cell: () => (
@@ -139,17 +131,11 @@ const bookingColumns: ColumnDef<Booking>[] = [
 ];
 
 export default function Bookings() {
-  const { bookings, isLoading } = useBooking();
+  const { bookings } = useBooking();
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
   
-  const AddNewBookingButton = () => (
-    <Button className="w-full md:w-auto flex items-center gap-1">
-      <PlusCircle size={16} />
-      <span>New Booking</span>
-    </Button>
-  );
 
-  // Filter buttons for quick status filtering
+
   const FilterTabs = () => (
     <div className="flex flex-wrap gap-2 mb-4">
       {["all", "pending", "confirmed", "cancelled"].map((status) => (
@@ -166,11 +152,12 @@ export default function Bookings() {
     </div>
   );
 
+  console.log("Here are the booking: ", bookings)
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 className="text-2xl font-bold tracking-tight">Bookings</h1>
-        <AddNewBookingButton />
       </div>
       
       <FilterTabs />
@@ -179,11 +166,7 @@ export default function Bookings() {
         data={bookings ?? []} 
         columns={bookingColumns} 
         filterPlaceholder="Search bookings..." 
-        addNewComponent={
-          <div className="hidden md:block">
-            <AddNewBookingButton />
-          </div>
-        } 
+        
       />
     </div>
   );

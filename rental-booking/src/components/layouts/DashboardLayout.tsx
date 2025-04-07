@@ -13,14 +13,16 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 import { Button } from "../ui/button";
 import useAuth from "@/hooks/useAuth";
 
-const navigation = [
+// Role-specific navigation
+const hostNavigation = [
   { name: "Overview", href: "/dashboard", icon: HomeIcon },
-  {
-    name: "Properties",
-    href: "/dashboard/properties",
-    icon: BuildingOfficeIcon,
-  },
+  { name: "Properties", href: "/dashboard/properties", icon: BuildingOfficeIcon },
   { name: "Agents", href: "/dashboard/agents", icon: UserGroupIcon },
+  { name: "Bookings", href: "/dashboard/bookings", icon: CalendarIcon },
+];
+
+const renterNavigation = [
+  { name: "Overview", href: "/dashboard", icon: HomeIcon },
   { name: "Bookings", href: "/dashboard/bookings", icon: CalendarIcon },
 ];
 
@@ -35,6 +37,13 @@ const DashboardLayout: React.FC = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
   const { user, logout } = useAuth();
+  console.log("User: ", user); 
+
+  const navigation = user?.role === "HOST"
+    ? hostNavigation
+    : user?.role === "RENTER"
+    ? renterNavigation
+    : [];
 
   return (
     <div className="flex min-h-screen overflow-hidden">
@@ -105,7 +114,7 @@ const DashboardLayout: React.FC = () => {
                     variant="outline"
                     className="w-full bg-transparent border-none text-white hover:bg-blue-200 hover:text-white group flex justify-start items-center gap-x-3 rounded-md p-2 text-sm font-semibold transition-all"
                     onClick={() => {
-                      logout()
+                      logout();
                       setSidebarOpen(false);
                     }}
                   >

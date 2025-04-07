@@ -80,4 +80,18 @@ export default class PropertyService{
             console.error("Error while deleting property: ", error?.message)
         }
     }
+
+    public static findAllPropertiesByHost = async(hostId: string) => {
+        try{
+            const properties = await prisma.property.findMany({
+                where: {
+                    hostId
+                }
+            })
+
+            return properties;
+        }catch(error: any){
+            console.error("Error while retrieving all properties by host: ", error?.message)
+        }
+    }
 }

@@ -37,26 +37,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
 
   useEffect(() => {
-    const fetchUser = async () => {
-      setInitialLoading(true);
-      try {
-        const { data } = await axios.get("/auth/me");
-        setUser(data.user);
-      } catch (error) {
-        setUser(null);
-        if (location.pathname.startsWith("/dashboard")) {
-          navigate("/login", { replace: true });
-        }
-        console.log("Error fetching user: ", error);
-      } finally {
-        setInitialLoading(false);
-      }
-    };
+   
   
-    if (!user) {
-      fetchUser();
+    if (user) {
+      setInitialLoading(false);
+      return;
+  }
+  const fetchUser = async () => {
+    setInitialLoading(true);
+    try {
+      const { data } = await axios.get("/auth/me");
+      setUser(data.user);
+    } catch (error) {
+      setUser(null);
+      if (location.pathname.startsWith("/dashboard")) {
+        navigate("/login", { replace: true});
+      }
+      console.log("Error fetching user: ", error);
+    } finally {
+      setInitialLoading(false);
     }
-  }, [location.pathname]);
+  };
+  fetchUser()
+  }, [location.pathname, user]);
   
 
   const register = async (user: Omit<User, "id">) => {

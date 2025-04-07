@@ -112,4 +112,20 @@ export default class PropertyController {
       });
     }
   };
+
+  public static getAllPropertiesByHost = async(req: Request , res: Response) => {
+    const hostId = req.params.hostId;
+
+    try{
+      const properties = await PropertyService.findAllPropertiesByHost(hostId);
+      res.status(200).json({
+        success: true,
+        properties
+      })
+    }catch(error: any){
+      res.status(500).json({
+        message: "Internal server error",
+      });
+    }
+  }
 }

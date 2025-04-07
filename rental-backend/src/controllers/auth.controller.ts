@@ -68,7 +68,7 @@ export default class AuthController {
       const user = await prisma.user.findUnique({
         where: {
           email,
-        },
+        }
       });
 
       if (!user) {
@@ -190,6 +190,8 @@ export default class AuthController {
           firstName: true,
           lastName: true,
           email: true,
+          role: true,
+          phoneNumber: true,
         },
       });
 

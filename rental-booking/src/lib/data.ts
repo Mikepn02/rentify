@@ -205,6 +205,14 @@ export type Booking = {
   lastName: string;
   propertyId: string;
   checkInDate: string;
+  property: {
+    title: string;
+  },
+  renter: {
+    firstName:string;
+    lastName: string;
+    email: string;
+  }
   checkoutDate: string;
   guests: number;
   totalAmount: number;

@@ -26,9 +26,9 @@ import {
   Home, 
   MoreHorizontal, 
   Plus, 
-  RefreshCw
+  RefreshCw 
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/Badge";
 
 // Sample booking data with more detailed information
 const bookingsData = [
@@ -67,11 +67,11 @@ const propertyTypes = [
 
 const Overview = () => {
   const greeting = getGreeting();
-  const { user } = useAuth();
-  const { properties: propertyData} = useProperties();
+  const { user } = useAuth(); // Get current user details
+  const { properties: propertyData } = useProperties(); // Get properties data
   const [chartView, setChartView] = useState("6months");
   const [chartMetric, setChartMetric] = useState("revenue");
-  
+
   const formatCurrency = (value: any) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -82,7 +82,6 @@ const Overview = () => {
   };
 
   const getChartData = () => {
-    // In a real app, you would filter data based on chartView
     return bookingsData;
   };
 
@@ -105,10 +104,13 @@ const Overview = () => {
             <RefreshCw size={14} />
             <span>Refresh</span>
           </Button>
-          <Button className="gap-2">
-            <Plus size={16} />
-            <span>Add Property</span>
-          </Button>
+          {/* Button only accessible by HOSTs */}
+          {user?.role === "HOST" && (
+            <Button className="gap-2">
+              <Plus size={16} />
+              <span>Add Property</span>
+            </Button>
+          )}
         </div>
       </div>
 
@@ -168,63 +170,22 @@ const Overview = () => {
                     <stop offset="95%" stopColor="#0EA5E9" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <XAxis 
-                  dataKey="month" 
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: '#6B7280', fontSize: 12 }}
-                />
-                <YAxis 
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: '#6B7280', fontSize: 12 }}
-                  tickFormatter={value => chartMetric === 'revenue' ? 
-                    formatCurrency(value).replace(',000', 'k') : 
-                    value
-                  }
-                />
+                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} tickFormatter={value => chartMetric === 'revenue' ? formatCurrency(value).replace(',000', 'k') : value} />
                 <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                <Tooltip 
-                  formatter={(value, name) => {
-                    if (name === 'Revenue') return formatCurrency(value);
-                    return value;
-                  }}
-                  contentStyle={{
-                    backgroundColor: 'white',
-                    borderRadius: '8px',
-                    padding: '10px',
-                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
-                    border: 'none'
-                  }}
-                />
+                <Tooltip formatter={(value, name) => name === 'Revenue' ? formatCurrency(value) : value} />
                 {chartMetric === 'revenue' && (
-                  <Area
-                    type="monotone"
-                    dataKey="revenue"
-                    stroke="#4F46E5"
-                    strokeWidth={2}
-                    fillOpacity={1}
-                    fill="url(#colorRevenue)"
-                    name="Revenue"
-                  />
+                  <Area type="monotone" dataKey="revenue" stroke="#4F46E5" strokeWidth={2} fillOpacity={1} fill="url(#colorRevenue)" />
                 )}
                 {chartMetric === 'bookings' && (
-                  <Area
-                    type="monotone"
-                    dataKey="bookings"
-                    stroke="#0EA5E9"
-                    strokeWidth={2}
-                    fillOpacity={1}
-                    fill="url(#colorBookings)"
-                    name="Bookings"
-                  />
+                  <Area type="monotone" dataKey="bookings" stroke="#0EA5E9" strokeWidth={2} fillOpacity={1} fill="url(#colorBookings)" />
                 )}
               </AreaChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        {/* Popular Units Card */}
+        {/* Property Insights Card */}
         <Card className="shadow-sm">
           <CardHeader className="pb-2">
             <div className="flex justify-between items-center">
@@ -259,26 +220,22 @@ const Overview = () => {
                       <p className="text-sm text-gray-500">{type.count.toLocaleString()} units</p>
                     </div>
                   </div>
-                  <Badge 
-                    variant="outline" 
-                    className={`flex items-center gap-1 ${
-                      type.trending === "up" 
-                        ? "bg-green-50 text-green-700 border-green-200" 
-                        : "bg-red-50 text-red-700 border-red-200"
-                    }`}
-                  >
+                  <Badge variant="outline" className={`flex items-center gap-1 ${type.trending === "up" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
                     {type.trend}
                   </Badge>
                 </div>
               ))}
             </div>
 
-            <Button className="w-full mt-4 bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600">
-              <div className="flex items-center justify-center gap-2">
-                <Crown size={16} />
-                <span>Upgrade to Pro for Analytics</span>
-              </div>
-            </Button>
+            {/* Available only for HOSTs */}
+            {user?.role === "HOST" && (
+              <Button className="w-full mt-4 bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600">
+                <div className="flex items-center justify-center gap-2">
+                  <Crown size={16} />
+                  <span>Upgrade to Pro for Analytics</span>
+                </div>
+              </Button>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -290,14 +247,15 @@ const Overview = () => {
             <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
               <div>
                 <CardTitle className="text-xl">Your Properties</CardTitle>
-                <p className="text-sm text-gray-500 mt-1">
-                  Manage and monitor all your property listings
-                </p>
+                <p className="text-sm text-gray-500 mt-1">Manage and monitor all your property listings</p>
               </div>
-              <Button>
-                <Plus size={16} className="mr-2" />
-                Add New Property
-              </Button>
+              {/* Available only for HOSTs */}
+              {user?.role === "HOST" && (
+                <Button>
+                  <Plus size={16} className="mr-2" />
+                  Add New Property
+                </Button>
+              )}
             </div>
           </CardHeader>
           <CardContent>

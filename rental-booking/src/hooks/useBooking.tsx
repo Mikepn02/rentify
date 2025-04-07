@@ -67,7 +67,7 @@ export default function useBooking() {
     return booking;
   };
 
-  const createBooking = async (booking: Omit<Booking, "id">) => {
+  const createBooking = async (booking: Omit<Booking, "id" | "renter" | "property">) => {
     setBookingProperty(true);
     try {
       const { data } = await axios.post("/booking/create", booking);
@@ -100,6 +100,21 @@ export default function useBooking() {
       setBookingProperty(false);
     }
   };
+
+  const getBookingByRenter = (renterId: string): Booking[] => {
+    if(!bookings) return [];
+      const booking = bookings?.filter((booking) => booking.renterId === renterId);
+      if (!booking) {
+          toast({
+              title: "Booking",
+              description: "Your booking was successful.",
+              open: true,
+              onOpenChange: () => {},
+            });
+          navigate("/properties");
+      }
+      return booking;
+  }
 
   const updateBooking = async(id: string , updatedData: Partial<Omit<Booking , "id">>) => {
     setUpdateBooking(true);
@@ -175,6 +190,7 @@ export default function useBooking() {
     getBookingById,
     deleteBooking,
     getBookingsByPropertyId,
+    getBookingByRenter,
     bookingProperty,
     deletingBooking,
     updatingBooking,

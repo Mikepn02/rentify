@@ -1,12 +1,12 @@
 import { PrismaClient } from "@prisma/client";
-import { validateBooking } from "../utils/validator";
+import { bookingSchema, validateBooking } from "../utils/validator";
 
-const primsa = new PrismaClient();
+const prisma = new PrismaClient();
 export default class BookingService {
-  public static createBooking = async (renterId: string ,data: any) => {
+  public static createBooking = async (renterId: string, data: any) => {
     try {
       const bookProperty = validateBooking(data);
-      const property = await primsa.property.findUnique({
+      const property = await prisma.property.findUnique({
         where: {
           id: bookProperty.propertyId,
         },
@@ -17,10 +17,10 @@ export default class BookingService {
       }
       const totalAmount = property.price * bookProperty.guests;
 
-      const booking = await primsa.booking.create({
+      const booking = await prisma.booking.create({
         data: {
           renterId: renterId,
-          propertyId: bookProperty.propertyId,  
+          propertyId: bookProperty.propertyId,
           checkInDate: bookProperty.checkInDate,
           checkoutDate: bookProperty.checkoutDate,
           guests: bookProperty.guests,
@@ -35,49 +35,185 @@ export default class BookingService {
     }
   };
 
+  public static findBookingById = async (id: string) => {
+    try {
+      const booking = await prisma.booking.findUnique({
+        where: {
+          id,
+        },
+        include: { payment: true, property: true },
+      });
+      return booking;
+    } catch (error: any) {
+      console.error("Error while finding booking: ", error?.message);
+    }
+  };
 
-  public static findBookingById = async(id: string) => {
-     try{
-        const booking = await primsa.booking.findUnique({
-            where: {
-                id
+  public static getBookingsByRenter = async (renterId: string) => {
+    try {
+      const booking = await prisma.booking.findMany({
+        where: {
+          renterId,
+        },
+        include: {
+          property: {
+            select: {
+              title: true,
             },
-            include: { payment: true, property: true },
-        })
-        return booking;
-     }catch(error: any){
-        console.error("Error while finding booking: ", error?.message)
-     }
-  }
-
-  public static getBookingsByRenter = async(renterId: string) => {
-    try{
-        const booking = await primsa.booking.findMany({
-            where: {
-                renterId
-            }
-        })
-        return booking;
-     }catch(error: any){
-        console.error("Error while finding booking: ", error?.message)
-     }
-  }
-
-  public static updateBookingStatus = async(bookingId: string, status: "CONFIRMED" | "CANCELED") => {
-    try{
-        const booking = await primsa.booking.update({
-            where: {
-                id: bookingId
+          },
+          renter: {
+            select: {
+              firstName: true,
+              lastName: true,
+              email: true,
             },
-            data: {
-                status
-            }
-        })
-        return booking;
+          },
+        },
+      });
+      return booking;
+    } catch (error: any) {
+      console.error("Error while finding booking: ", error?.message);
+    }
+  };
+
+  public static updateBookingStatus = async (
+    bookingId: string,
+    status: "CONFIRMED" | "CANCELED"
+  ) => {
+    try {
+      const booking = await prisma.booking.update({
+        where: {
+          id: bookingId,
+        },
+        data: {
+          status,
+        },
+      });
+      return booking;
+    } catch (error: any) {
+      console.error("Error while updating status: ", error?.message);
+    }
+  };
+
+  public static getBookingByHost = async (hostId: string) => {
+    try{
+      const bookings = await prisma.booking.findMany({
+        where: {
+          property: {
+            hostId,
+          },
+        },
+        include: {
+          property: true,
+          renter: true,
+        },
+      });
+      return bookings;
     }catch(error: any){
-        console.error("Error while updating status: ", error?.message)
+      console.error("Error while finding booking: ", error?.message);
+
     }
   }
 
+  public static getBookingByProperty = async(propertyId: string) => {
+     try{
+      const bookings = await prisma.booking.findMany({
+        where: {
+          propertyId
+        },
+        include: {
+          renter: true
+        }
+      })
+      return bookings;
+     }catch(error: any){
+      console.error("Error while finding booking: ", error?.message);
+     }
+  }
 
+  public static getBookingsByStatus = async (
+    userId: string,
+    status: "PENDING" | "CONFIRMED" | "CANCELED"
+  ) => {
+    try {
+      const bookings = await prisma.booking.findMany({
+        where: {
+          renterId: userId,
+          status,
+        },
+        include: {
+          property: true,
+        },
+      });
+      return bookings;
+    } catch (error: any) {
+      console.error("Error fetching bookings by status: ", error.message);
+    }
+  };
+
+  public static confirmBooking = async(bookingId: string) => {
+    return this.updateBookingStatus(bookingId, "CONFIRMED");
+  }
+
+  public static cancelBooking = async(bookingId: string) => {
+    return this.updateBookingStatus(bookingId, "CANCELED");
+  }
+
+  public static deleteBooking = async(bookingId: string) => {
+    try {
+      const booking = await prisma.booking.delete({
+        where: {
+          id: bookingId,
+        },
+      });
+      return booking;
+    } catch (error: any) {
+      console.error("Error while deleting booking: ", error?.message);
+    }
+  }
+  public static getAllBookings = async() => {
+    try {
+      const bookings = await prisma.booking.findMany({
+        include: {
+          renter: true,
+          property: true,
+        },
+      });
+      return bookings;
+    } catch (error: any) {
+      console.error("Error while fetching all bookings: ", error?.message);
+    }
+  }
+
+  public static checkAvailability = async (propertyId: string, checkInDate: Date, checkOutDate: Date) => {
+    try{
+       const overlapping = await prisma.booking.findFirst({
+        where: {
+          propertyId,
+          OR: [
+            {
+              checkInDate: {
+                lte: checkOutDate,
+              },
+              checkoutDate: {
+                gte: checkInDate,
+              },
+            },
+            {
+              checkInDate: {
+                gte: checkInDate,
+              },
+              checkoutDate: {
+                lte: checkOutDate,
+              },
+            },
+          ],
+        }
+       })
+
+       return !overlapping;
+    }catch(error: any){
+      console.error("Error while checking availability: ", error?.message);
+    }
+  }
 }

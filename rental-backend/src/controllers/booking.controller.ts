@@ -73,4 +73,75 @@ export default class BookingController {
       });
     }
   };
+  public static getBookingsByHost = async (req: Request, res: Response) => {
+    if(!req.user){
+      throw new Error("User not found")
+    }
+    const hostId = req.user;
+    try {
+      const bookings = await BookingService.getBookingByHost(hostId);
+      res.status(200).json({ success: true, bookings });
+    } catch {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  };
+
+  public static getBookingsByProperty = async (req: Request, res: Response) => {
+    const { propertyId } = req.params;
+    try {
+      const bookings = await BookingService.getBookingByProperty(propertyId);
+      res.status(200).json({ success: true, bookings });
+    } catch {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  };
+
+  public static getBookingsByStatus = async (req: Request, res: Response) => {
+    if(!req.user){
+      throw new Error("User not found")
+    }
+    const userId = req.user;
+    const { status } = req.params;
+    try {
+      const bookings = await BookingService.getBookingsByStatus(userId, status.toUpperCase() as any);
+      res.status(200).json({ success: true, bookings });
+    } catch {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  };
+
+  public static confirmBooking = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+      const booking = await BookingService.confirmBooking(id);
+      res.status(200).json({ success: true, booking });
+    } catch {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  };
+
+  public static cancelBooking = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+      const booking = await BookingService.cancelBooking(id);
+      res.status(200).json({ success: true, booking });
+    } catch {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  };
+
+  public static checkAvailability = async (req: Request, res: Response) => {
+    const { propertyId, checkInDate, checkoutDate } = req.body;
+    try {
+      const isAvailable = await BookingService.checkAvailability(
+        propertyId,
+        new Date(checkInDate),
+        new Date(checkoutDate)
+      );
+      res.status(200).json({ success: true, available: isAvailable });
+    } catch {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  };
+  
 }

@@ -3,14 +3,13 @@ import { Link } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import {
-  Form,
-} from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import useAuth from "@/hooks/useAuth";
 import CustomFormField, {
   FormFieldType,
 } from "@/components/forms/CustomFormField";
+import { SelectItem } from "@/components/ui/select";
 
 const icons = [
   {
@@ -34,6 +33,9 @@ const formschema = z.object({
   password: z.string().min(8, "Password must be atleast 8 characters"),
   confirmPassword: z.string().min(8, "Password must be atleast 8 characters"),
   phoneNumber: z.string().min(10, "Phone number must be atleast 10 numbers"),
+  role: z.enum(["RENTER", "HOST"], {
+    errorMap: () => ({ message: "Invalid role" }),
+  }),
 });
 const SignUp = () => {
   const { register } = useAuth();
@@ -43,6 +45,7 @@ const SignUp = () => {
       firstName: "",
       lastName: "",
       email: "",
+      role: "RENTER",
       password: "",
       confirmPassword: "",
       phoneNumber: "",
@@ -59,7 +62,7 @@ const SignUp = () => {
     }
   };
 
-  console.log(form.formState.errors)
+  console.log(form.formState.errors);
   return (
     <AuthLayout>
       <div className="md:mx-auto max-w-3xl lg:w-[80%]">
@@ -110,21 +113,41 @@ const SignUp = () => {
                 />
 
                 <CustomFormField
+                  fieldType={FormFieldType.SELECT}
+                  name="role"
+                  control={form.control}
+                  label="Select your Role"
+                  placeholder="Select your Role"
+                >
+                  {[
+                    { value: "RENTER", label: "Renter" },
+                    { value: "HOST", label: "Host" },
+                  ].map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </CustomFormField>
+
+                <CustomFormField
                   fieldType={FormFieldType.INPUT}
                   name="password"
                   placeholder="Enter your Password"
                   control={form.control}
                   label="Password"
                 />
-                
-                <CustomFormField 
-                    fieldType={FormFieldType.INPUT}
-                    name="confirmPassword"
-                    placeholder="Confirm Password"
-                    control={form.control}
-                    label="Confirm Password"
-                  />
-                <Button type="submit" className="bg-primary-light w-full hover:bg-primary-light">
+
+                <CustomFormField
+                  fieldType={FormFieldType.INPUT}
+                  name="confirmPassword"
+                  placeholder="Confirm Password"
+                  control={form.control}
+                  label="Confirm Password"
+                />
+                <Button
+                  type="submit"
+                  className="bg-primary-light w-full hover:bg-primary-light"
+                >
                   Sign Up
                 </Button>
               </form>
