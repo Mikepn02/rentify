@@ -89,7 +89,13 @@ export default class AuthController {
         });
       }
 
-      const token = generateToken(user.id);
+      const payload = {
+        id: user.id,
+        role: user.role,
+        email: user.email,
+      }
+
+      const token = generateToken(payload);
       res.cookie("token", token, {
         httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24 * 7,
@@ -180,10 +186,18 @@ export default class AuthController {
 
   public static getLoggedInUser = async (req: Request, res: Response) => {
 
+    if(!req.user){
+      return res.status(401).json({
+        message: "Unauthorized",
+        success: false,
+      });
+    }
+
     try {
       const user = await prisma.user.findUnique({
         where: {
-          id: req.user,
+          //@ts-ignore
+          id: req.user.id,
         },
         select: {
           id: true,

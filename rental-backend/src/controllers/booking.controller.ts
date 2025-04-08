@@ -10,7 +10,8 @@ export default class BookingController {
     if(!req.user){
       throw new Error("User not authorized")
     }
-    const renterId = req.user
+     //@ts-ignore
+    const renterId = req.user.id
     try {
       const booking = await BookingService.createBooking(renterId ,req.body);
       res.status(201).json({
@@ -44,7 +45,8 @@ export default class BookingController {
     if(!req.user){
       throw new Error("User not found")
     }
-    const id = req.user;
+     //@ts-ignore
+    const id = req.user.id;
 
     try {
       const bookings = await BookingService.getBookingsByRenter(id);
@@ -77,7 +79,8 @@ export default class BookingController {
     if(!req.user){
       throw new Error("User not found")
     }
-    const hostId = req.user;
+     //@ts-ignore
+    const hostId = req.user.id;
     try {
       const bookings = await BookingService.getBookingByHost(hostId);
       res.status(200).json({ success: true, bookings });
@@ -100,7 +103,8 @@ export default class BookingController {
     if(!req.user){
       throw new Error("User not found")
     }
-    const userId = req.user;
+     //@ts-ignore
+    const userId = req.user.id;
     const { status } = req.params;
     try {
       const bookings = await BookingService.getBookingsByStatus(userId, status.toUpperCase() as any);

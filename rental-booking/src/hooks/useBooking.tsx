@@ -1,10 +1,11 @@
 import axios from "@/lib/axios.config";
-import { Booking } from "@/lib/data";
+import { Booking, BookingStatus } from "@/lib/data";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useSWR from "swr";
 import { useToast } from "./use-toast";
 import useAuth from "./useAuth";
+
 
 export default function useBooking() {
   const navigate = useNavigate();
@@ -15,28 +16,27 @@ export default function useBooking() {
   const [deletingBooking, setDeletingBooking] = useState(false);
   const [updatingBooking, setUpdateBooking] = useState(false);
 
-  const {
-    data: bookings,
-    isLoading,
-    error,
-    mutate,
-  } = useSWR<Booking[]>("/booking", async (url: string) => {
-    if (!user){
-        toast({
-            title: "Something went wrong",
-            description: "Login to Book a property",
-            open: true,
-            onOpenChange: () => {},
-          });
-        return;
-    }
-    const { data } = await axios.get(url);
-    return data.bookings;
-  });
+  const bookingKey = user
+  ? user.role === "RENTER"
+    ? "/booking"
+    : "/booking/host"
+  : null;
+
+const {
+  data: bookings,
+  isLoading,
+  error,
+  mutate,
+} = useSWR<Booking[]>(bookingKey, async (url: string) => {
+  const { data } = await axios.get(url);
+  console.log("Bookings data: ", data);
+  return data.bookings;
+});
 
   useEffect(() => {
-    mutate();
-  }, [user]);
+    if (user) mutate();
+  }, [user, mutate]);
+  
 
   const getBookingById = (id: string) => {
     const booking = bookings?.find((b) => b.id === id);
@@ -116,6 +116,106 @@ export default function useBooking() {
       return booking;
   }
 
+  const getBookingsByStatus = async (status: BookingStatus) => {
+    try {
+      const { data } = await axios.get(`/booking/status/${status}`);
+      return data.bookings as Booking[];
+    } catch (error) {
+      console.error("Error fetching bookings by status", error);
+      toast({
+        title: "Error",
+        description: "Could not fetch bookings by status.",
+        open: true,
+        onOpenChange: () => {},
+      });
+      return [];
+    }
+  };
+
+
+  const getBookingsByHost = async() => {
+    try {
+      const { data } = await axios.get("/booking/host");
+      if(data.success){
+        return data.bookings;
+      }
+    } catch (error) {
+      console.error("Error fetching host bookings", error);
+      toast({
+        title: "Error",
+        description: "Could not fetch host bookings.",
+        open: true,
+        onOpenChange: () => {},
+      });
+      return [];
+    }
+  }
+
+  const confirmBooking = async(id: string) => {
+    try{
+       const { data } = await axios.patch(`/booking/${id}/confirm`);
+       if (data.success) {
+        toast({
+          title: "Booking confirmed",
+          description: "The booking has been confirmed successfully.",
+          open: true,
+          onOpenChange: () => {},
+        });
+        mutate();
+      }
+    }catch(error){
+      console.error("Error confirming booking", error);
+    toast({
+      title: "Error",
+      description: "Could not confirm booking.",
+      open: true,
+      onOpenChange: () => {},
+    });
+    }
+  }
+
+  const cancelBooking = async(id: string) => {
+    try{
+      const { data } = await axios.patch(`/booking/${id}/cancel`);
+      if (data.success) {
+        toast({
+          title: "Booking cancelled",
+          description: "The booking has been cancelled successfully.",
+          open: true,
+          onOpenChange: () => {},
+        });
+        mutate();
+      }
+    }catch(error){
+      console.error("Error cancelling booking", error);
+      toast({
+        title: "Error",
+        description: "Could not cancel booking.",
+        open: true,
+        onOpenChange: () => {},
+      });
+    }
+  }
+
+  const checkAvailability = async(propertyId: string, checkInDate: string, checkoutDate: string) => {
+    try {
+      const { data } = await axios.post("/booking/check-availability", {
+        propertyId,
+        checkInDate,
+        checkoutDate,
+      });
+      return data.available as boolean;
+    } catch (error) {
+      console.error("Error checking availability", error);
+      toast({
+        title: "Error",
+        description: "Could not check availability.",
+        open: true,
+        onOpenChange: () => {},
+      });
+      return false;
+    }
+  }
   const updateBooking = async(id: string , updatedData: Partial<Omit<Booking , "id">>) => {
     setUpdateBooking(true);
     try{
@@ -191,6 +291,11 @@ export default function useBooking() {
     deleteBooking,
     getBookingsByPropertyId,
     getBookingByRenter,
+    getBookingsByStatus,
+    checkAvailability,
+    confirmBooking,
+    cancelBooking,
+    getBookingsByHost,
     bookingProperty,
     deletingBooking,
     updatingBooking,

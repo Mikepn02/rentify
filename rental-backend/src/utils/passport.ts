@@ -31,7 +31,12 @@ passport.use(
               },
             });
           }
-          const token = generateToken(user.id);
+          const payload = {
+            id: user.id,
+            role: user.role,
+            email: user.email,
+          }
+          const token = generateToken(payload);
           return done(null, { user, token });
         } catch (error) {
           return done(error, false);

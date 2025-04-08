@@ -13,7 +13,7 @@ export default class PropertyController {
       throw new Error("User not authenticated");
     }
     //@ts-ignore
-    const userId = req.user;
+    const userId = req.user.id;
     console.log("User ID: ", userId);
     try {
       const files = req.files as Express.Multer.File[];

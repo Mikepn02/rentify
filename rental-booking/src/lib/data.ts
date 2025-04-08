@@ -15,6 +15,13 @@ export type Property = {
   available: boolean;
 };
 
+
+export enum BookingStatus {
+  PENDING,
+  CONFIRMED,
+  CANCELLED,
+}
+
 export const properties: Property[] = [
   {
     id: "1",
