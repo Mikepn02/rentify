@@ -12,7 +12,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { propertyColumns } from "./Properties";
 import useAuth from "@/hooks/useAuth";
 import useProperties from "@/hooks/useProperties";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,8 +28,67 @@ import {
   RefreshCw 
 } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
-
-// Sample booking data with more detailed information
+import { AvailableBadge, formatPrice, PropertyTypeBadge, StarRating } from "@/lib/helpers";
+import { Property } from "@/lib/data";
+const propertyColumns: ColumnDef<Property>[] = [
+  {
+    accessorKey: "title",
+    header: "Property",
+    cell: ({ row }) => (
+      <div className="flex flex-col">
+        <span className="font-medium text-gray-900">
+          {row.getValue("title")}
+        </span>
+        <span className="text-xs text-gray-500">{row.original.location}</span>
+      </div>
+    ),
+  },
+  {
+    accessorKey: "type",
+    header: "Type",
+    cell: ({ row }) => <PropertyTypeBadge type={row.getValue("type")} />,
+  },
+  {
+    accessorKey: "price",
+    header: "Price",
+    cell: ({ row }) => (
+      <div className="font-semibold text-gray-900">
+        {formatPrice(row.getValue("price"))}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "details",
+    header: "Details",
+    cell: ({ row }) => (
+      <div className="flex items-center space-x-2 text-sm text-gray-600">
+        <span>{row.original.bedrooms} beds</span>
+        <span>•</span>
+        <span>{row.original.bathrooms} baths</span>
+        <span>•</span>
+        <span>{row.original.area || "N/A"} sq ft</span>
+      </div>
+    ),
+  },
+  {
+    accessorKey: "rating",
+    header: "Rating",
+    cell: ({ row }) => (
+      <div className="flex items-center space-x-1">
+        <StarRating rating={row.original.rating} />
+        <span className="text-xs text-gray-500">
+          ({row.original.reviewCount || 0})
+        </span>
+      </div>
+    ),
+  },
+  {
+    accessorKey: "available",
+    header: "Status",
+    cell: ({ row }) => <AvailableBadge available={row.getValue("available")} />,
+  },
+  
+];
 const bookingsData = [
   { month: "Feb", bookings: 180, revenue: 75000, occupancy: 68 },
   { month: "Mar", bookings: 200, revenue: 82000, occupancy: 72 },

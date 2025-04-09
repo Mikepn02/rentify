@@ -40,7 +40,7 @@ const FeaturedProperties = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-              {properties?.map((property, index) => (
+              {properties?.slice(0,6).map((property, index) => (
                 <div
                   key={property.id}
                   className={`transition-all duration-700 transform ${

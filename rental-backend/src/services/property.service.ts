@@ -24,6 +24,7 @@ export default class PropertyService{
 
         }catch(error: any){
             console.error("Error while creating property: ", error)
+            throw error;
         }
     }
 
@@ -39,6 +40,7 @@ export default class PropertyService{
             return property;
         }catch(error: any){
             console.error("Error while create property: ", error?.message)
+            throw error;
         }
     }
 
@@ -49,6 +51,7 @@ export default class PropertyService{
         return properties;
         }catch(error: any){
             console.error("Error while retrieving all properties: ", error?.message)
+            throw error;
         }
     }
 
@@ -63,21 +66,35 @@ export default class PropertyService{
                 data: property
             })
 
+            console.log("updated property: ", updatedProperty);
+
             return updatedProperty
         }catch(error: any){
-            console.error("Error while updating the property: ", error?.message)
+            console.error("Error while updating the property: ", error)
+            throw error;
         }
     }
 
-    public static deleteProperty = async(id: string) => {
+    public static deleteProperty = async(id: string, userId: string) => {
+        
         try{
-            return prisma.property.delete({
-                where: { 
-                    id
-                }
-            })
+            const property = await prisma.property.findUnique({
+                where: { id },
+              });
+          
+              if (!property) {
+                throw new Error("Property not found");
+              }
+              if (property.hostId !== userId) {
+                throw new Error("You are not authorized to delete this property");
+              }
+        
+              return await prisma.property.delete({
+                where: { id },
+              });
         }catch(error: any){
-            console.error("Error while deleting property: ", error?.message)
+            console.error("Error while deleting property: ", error?.message);
+            throw error;
         }
     }
 
@@ -92,6 +109,7 @@ export default class PropertyService{
             return properties;
         }catch(error: any){
             console.error("Error while retrieving all properties by host: ", error?.message)
+            throw error;
         }
     }
 }

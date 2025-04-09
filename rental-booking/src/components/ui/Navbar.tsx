@@ -109,8 +109,10 @@ const Navbar = () => {
               {link.title}
             </Link>
           ))}
+        </div>
+        <div className="flex items-center space-x-4">
           {user ? (
-            <Link to={"/properties"}>
+            <Link to={"/dashboard"}>
               <Button
                 className={`bg-transparent px-4 py-2 rounded-full  hover:bg-primary-light ${
                   scrolled
@@ -118,7 +120,7 @@ const Navbar = () => {
                     : "bg-primary-light"
                 }`}
               >
-                Book Now
+                Dashboard
               </Button>
             </Link>
           ) : (

@@ -52,8 +52,8 @@ function App() {
                 />
                 <Route path="contact" element={<Contact />} />
 
-                <Route path="booking" element={<BookProperty />} />
                 <Route path="*" element={<NotFound />} />
+                <Route path="booking" element={<BookProperty />} />
               </Route>
               <Route path="signup" element={<SignUp />} />
               <Route path="login" element={<Login />} />

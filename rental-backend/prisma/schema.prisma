@@ -27,7 +27,7 @@ model Property {
   title       String
   description String
   hostId      String
-  host        User      @relation(fields: [hostId], references: [id])
+  host        User      @relation(fields: [hostId], references: [id], onDelete: Cascade)
   price       Float
   rating      Float     @default(0.0)
   reviewCount Int       @default(0)
@@ -49,7 +49,7 @@ model Booking {
   id           String        @id @default(cuid())
   renter       User          @relation(fields: [renterId], references: [id])
   renterId     String
-  property     Property      @relation(fields: [propertyId], references: [id])
+  property     Property   @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   propertyId   String
   checkInDate  DateTime
   checkoutDate DateTime

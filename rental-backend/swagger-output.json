@@ -298,6 +298,21 @@
             "name": "authorization",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "existingImages": {
+                  "example": "any"
+                },
+                "amenities": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {

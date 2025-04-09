@@ -71,12 +71,12 @@ export type Video = {
 };
 
 export type Property = {
-  id: string;
+  id?: string;
   title: string;
   location: string;
   price: number;
-  rating: number;
-  reviewCount: number;
+  rating?: number;
+  reviewCount?: number;
   type: string;
   bedrooms: number;
   bathrooms: number;

@@ -17,12 +17,13 @@ export const PropertyFormValidation = z.object({
     description: z.string().min(10, "Description must be at least 10 characters long"),
     amenities: z.array(z.string()).nonempty("At least one amenity is required"),
     images: z
-  .any()
-  .refine((val) => Array.isArray(val) && val.every((file) => file instanceof File), {
-    message: "Please upload valid image files",
-  })
-  .optional(),
-
+    .array(
+      z.union([
+        z.instanceof(File),
+        z.string().url(),
+      ])
+    )
+    .min(1, { message: "Please upload valid image files" }),  
     available: z.boolean(),
   });
 

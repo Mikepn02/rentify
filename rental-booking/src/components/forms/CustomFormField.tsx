@@ -10,6 +10,7 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
+import 'react-phone-number-input/style.css'
 import PhoneInput from "react-phone-number-input";
 import { E164Number } from "libphonenumber-js/core";
 import { Checkbox } from "../ui/checkbox";

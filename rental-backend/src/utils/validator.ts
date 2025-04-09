@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z , ZodError} from "zod";
 import { User } from "../types";
 
 export const userSchema = z.object({
@@ -37,7 +37,6 @@ export const propertySchema = z.object({
   amenities: z.array(z.string()).nonempty("Amenities cannot be empty"),
   images: z.array(z.string().url()).nonempty("At least one image is required"),
   available: z.coerce.boolean().default(true),
-
 });
 
 
@@ -73,15 +72,13 @@ export const validateUser = (data: User) => {
 };
 
 
-export const validateProperty = (data: any) => {
+export function validateProperty(data) {
   const property = propertySchema.safeParse(data);
-
-  if(!property.success) {
-    throw new Error(property.error.errors[0].message)
+  if (!property.success) {
+    throw new Error(property.error.errors[0].message);
   }
   return property.data;
 }
-
 export const validateBooking = (data: any) => {
   const booking = bookingSchema.safeParse(data);
   if (!booking.success) {

@@ -5,56 +5,40 @@ import { useNavigate } from "react-router-dom";
 import useSWR from "swr";
 import { useToast } from "./use-toast";
 import useAuth from "./useAuth";
-
+import { notifications } from "@mantine/notifications";
 
 export default function useBooking() {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { user } = useAuth()
+  const { user } = useAuth();
 
   const [bookingProperty, setBookingProperty] = useState(false);
   const [deletingBooking, setDeletingBooking] = useState(false);
   const [updatingBooking, setUpdateBooking] = useState(false);
 
   const bookingKey = user
-  ? user.role === "RENTER"
-    ? "/booking"
-    : "/booking/host"
-  : null;
+    ? user.role === "RENTER"
+      ? "/booking"
+      : "/booking/host"
+    : null;
 
-const {
-  data: bookings,
-  isLoading,
-  error,
-  mutate,
-} = useSWR<Booking[]>(bookingKey, async (url: string) => {
-  const { data } = await axios.get(url);
-  console.log("Bookings data: ", data);
-  return data.bookings;
-});
+  const {
+    data: bookings,
+    isLoading,
+    error,
+    mutate,
+  } = useSWR<Booking[]>(bookingKey, async (url: string) => {
+    const { data } = await axios.get(url);
+    console.log("Bookings data: ", data);
+    return data.bookings;
+  });
 
   useEffect(() => {
     if (user) mutate();
   }, [user, mutate]);
-  
 
   const getBookingById = (id: string) => {
     const booking = bookings?.find((b) => b.id === id);
-    if (!booking) {
-        toast({
-            title: "Booking",
-            description: "Your booking was successful.",
-            open: true,
-            onOpenChange: () => {},
-          });
-        navigate("/properties");
-    }
-    return booking;
-  };
-
-  const getBookingsByPropertyId = (propertyId: string): Booking[] => {
-    if (!bookings) return [];  
-    const booking = bookings.filter((booking) => booking.propertyId === propertyId);
     if (!booking) {
       toast({
         title: "Booking",
@@ -67,25 +51,41 @@ const {
     return booking;
   };
 
-  const createBooking = async (booking: Omit<Booking, "id" | "renter" | "property">) => {
+  const getBookingsByPropertyId = (propertyId: string): Booking[] => {
+    if (!bookings) return [];
+    const booking = bookings.filter(
+      (booking) => booking.propertyId === propertyId
+    );
+    if (!booking) {
+      toast({
+        title: "Booking",
+        description: "Your booking was successful.",
+        open: true,
+        onOpenChange: () => {},
+      });
+      navigate("/properties");
+    }
+    return booking;
+  };
+
+  const createBooking = async (
+    booking: Omit<Booking, "id" | "renter" | "property" | "status">
+  ) => {
     setBookingProperty(true);
     try {
       const { data } = await axios.post("/booking/create", booking);
       if (data.success) {
-        toast({
-          title: "Booking created",
-          description: "Your booking was successful.",
-          open: true,
-          onOpenChange: () => {},
+        notifications.show({
+          title: "Success",
+          message: "Booking created successfully",
+          color: "green",
         });
         mutate([...(bookings || []), data.booking]);
         navigate("/properties");
       } else {
-        toast({
-          title: "Something went wrong",
-          description: "Could not create the booking.",
-          open: true,
-          onOpenChange: () => {},
+        notifications.show({
+          message: "something went wrong",
+          color: "red",
         });
       }
     } catch (error) {
@@ -102,19 +102,21 @@ const {
   };
 
   const getBookingByRenter = (renterId: string): Booking[] => {
-    if(!bookings) return [];
-      const booking = bookings?.filter((booking) => booking.renterId === renterId);
-      if (!booking) {
-          toast({
-              title: "Booking",
-              description: "Your booking was successful.",
-              open: true,
-              onOpenChange: () => {},
-            });
-          navigate("/properties");
-      }
-      return booking;
-  }
+    if (!bookings) return [];
+    const booking = bookings?.filter(
+      (booking) => booking.renterId === renterId
+    );
+    if (!booking) {
+      toast({
+        title: "Booking",
+        description: "Your booking was successful.",
+        open: true,
+        onOpenChange: () => {},
+      });
+      navigate("/properties");
+    }
+    return booking;
+  };
 
   const getBookingsByStatus = async (status: BookingStatus) => {
     try {
@@ -132,11 +134,10 @@ const {
     }
   };
 
-
-  const getBookingsByHost = async() => {
+  const getBookingsByHost = async () => {
     try {
       const { data } = await axios.get("/booking/host");
-      if(data.success){
+      if (data.success) {
         return data.bookings;
       }
     } catch (error) {
@@ -149,12 +150,12 @@ const {
       });
       return [];
     }
-  }
+  };
 
-  const confirmBooking = async(id: string) => {
-    try{
-       const { data } = await axios.patch(`/booking/${id}/confirm`);
-       if (data.success) {
+  const confirmBooking = async (id: string) => {
+    try {
+      const { data } = await axios.patch(`/booking/${id}/confirm`);
+      if (data.success) {
         toast({
           title: "Booking confirmed",
           description: "The booking has been confirmed successfully.",
@@ -163,19 +164,19 @@ const {
         });
         mutate();
       }
-    }catch(error){
+    } catch (error) {
       console.error("Error confirming booking", error);
-    toast({
-      title: "Error",
-      description: "Could not confirm booking.",
-      open: true,
-      onOpenChange: () => {},
-    });
+      toast({
+        title: "Error",
+        description: "Could not confirm booking.",
+        open: true,
+        onOpenChange: () => {},
+      });
     }
-  }
+  };
 
-  const cancelBooking = async(id: string) => {
-    try{
+  const cancelBooking = async (id: string) => {
+    try {
       const { data } = await axios.patch(`/booking/${id}/cancel`);
       if (data.success) {
         toast({
@@ -186,7 +187,7 @@ const {
         });
         mutate();
       }
-    }catch(error){
+    } catch (error) {
       console.error("Error cancelling booking", error);
       toast({
         title: "Error",
@@ -195,9 +196,13 @@ const {
         onOpenChange: () => {},
       });
     }
-  }
+  };
 
-  const checkAvailability = async(propertyId: string, checkInDate: string, checkoutDate: string) => {
+  const checkAvailability = async (
+    propertyId: string,
+    checkInDate: string,
+    checkoutDate: string
+  ) => {
     try {
       const { data } = await axios.post("/booking/check-availability", {
         propertyId,
@@ -215,71 +220,74 @@ const {
       });
       return false;
     }
-  }
-  const updateBooking = async(id: string , updatedData: Partial<Omit<Booking , "id">>) => {
+  };
+  const updateBooking = async (
+    id: string,
+    updatedData: Partial<Omit<Booking, "id">>
+  ) => {
     setUpdateBooking(true);
-    try{
-        const { data } = await axios.patch(`/booking/${id}`, updatedData);
+    try {
+      const { data } = await axios.patch(`/booking/${id}`, updatedData);
 
-        if(data.success){
-            toast({
-                title: "Booking created",
-                description: "Your booking was successful.",
-                open: true,
-                onOpenChange: () => {},
-              });
-        }else{
-            toast({
-                title: "Error",
-                description: "An error occurred while updating the booking.",
-                open: true,
-                onOpenChange: () => {},
-              });
-        }
-    }catch(error){
-        console.error(error)
+      if (data.success) {
         toast({
-            title: "Error",
-            description: "An error occurred while updating the booking.",
-            open: true,
-            onOpenChange: () => {},
-          });
+          title: "Booking created",
+          description: "Your booking was successful.",
+          open: true,
+          onOpenChange: () => {},
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "An error occurred while updating the booking.",
+          open: true,
+          onOpenChange: () => {},
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Error",
+        description: "An error occurred while updating the booking.",
+        open: true,
+        onOpenChange: () => {},
+      });
     }
-  }
+  };
 
   const deleteBooking = async (id: string) => {
     setDeletingBooking(true);
     try {
-        const { data } = await axios.delete(`/bookings/${id}`);
-        if (data.success) {
-            toast({
-                title: "Booking created",
-                description: "Your booking was successful.",
-                open: true,
-                onOpenChange: () => {},
-              });
-            mutate((prev) => prev?.filter((b) => b.id !== id) || [], false);
-            navigate("/dashboard/bookings");
-        } else {
-            toast({
-                title: "Error",
-                description: "An error occurred while deleting the booking.",
-                open: true,
-                onOpenChange: () => {},
-              });
-        }
-    } catch (error) {
-        console.error(error);
+      const { data } = await axios.delete(`/bookings/${id}`);
+      if (data.success) {
         toast({
-            title: "Error",
-            description: "An error occurred while deleting the booking.",
-            open: true,
-            onOpenChange: () => {},
-          });
+          title: "Booking created",
+          description: "Your booking was successful.",
+          open: true,
+          onOpenChange: () => {},
+        });
+        mutate((prev) => prev?.filter((b) => b.id !== id) || [], false);
+        navigate("/dashboard/bookings");
+      } else {
+        toast({
+          title: "Error",
+          description: "An error occurred while deleting the booking.",
+          open: true,
+          onOpenChange: () => {},
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Error",
+        description: "An error occurred while deleting the booking.",
+        open: true,
+        onOpenChange: () => {},
+      });
     } finally {
-        setDeletingBooking(false);
+      setDeletingBooking(false);
     }
-};
+  };
 
   return {
     bookings,

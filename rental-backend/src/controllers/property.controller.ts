@@ -86,12 +86,67 @@ export default class PropertyController {
   public static updateProperty = async (req: Request, res: Response) => {
     const id = req.params.id;
     try {
-      const property = await PropertyService.updateProperty(id, req.body);
+      const files = req.files as Express.Multer.File[];
+  
+      // Upload new images to Cloudinary
+      const imageUploadPromises = files?.map((file) => {
+        return new Promise<string>((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            { resource_type: "image" },
+            (error, result) => {
+              if (error) return reject(error);
+              resolve(result?.secure_url || "");
+            }
+          );
+          if (file.buffer) {
+            uploadStream.end(file.buffer);
+          } else {
+            reject(new Error("File buffer is missing"));
+          }
+        });
+      }) || [];
+  
+      const newImageUrls = await Promise.all(imageUploadPromises);
+  
+      // Get existing images from form data (will come as string or array)
+      const existingImagesRaw = req.body.existingImages || [];
+      const existingImages = Array.isArray(existingImagesRaw)
+        ? existingImagesRaw
+        : [existingImagesRaw];
+  
+      // Merge and filter all images
+      const isValidUrl = (url: string): boolean => {
+        try {
+          new URL(url);
+          return true;
+        } catch {
+          return false;
+        }
+      };
+  
+      const mergedImages = [...existingImages, ...newImageUrls].filter(isValidUrl);
+  
+      // Parse amenities from form data
+      const rawAmenities = req.body.amenities;
+      const amenities = Array.isArray(rawAmenities)
+        ? rawAmenities
+        : typeof rawAmenities === "string"
+          ? [rawAmenities]
+          : [];
+      const updatedData = {
+        ...req.body,
+        images: mergedImages,
+        amenities,
+      };
+  
+      const property = await PropertyService.updateProperty(id, updatedData);
+  
       res.status(200).json({
         success: true,
         property,
       });
     } catch (error: any) {
+      console.error("Update error:", error);
       res.status(500).json({
         message: "Internal server error",
       });
@@ -99,9 +154,14 @@ export default class PropertyController {
   };
 
   public static deleteProperty = async (req: Request, res: Response) => {
+    if(!req.user){
+      throw new Error("User not authenticated");
+    }
     const id = req.params.id;
+    //@ts-ignore
+    const userId = req.user.id;
     try {
-      const property = await PropertyService.deleteProperty(id);
+      const property = await PropertyService.deleteProperty(id, userId);
       res.status(200).json({
         success: true,
         message: "Successfully deleted Property",

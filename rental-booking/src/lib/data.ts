@@ -226,6 +226,7 @@ export type Booking = {
   cardNumber: string;
   expiryDate: string;
   cvc: string;
+  status: string;
 };
 
 

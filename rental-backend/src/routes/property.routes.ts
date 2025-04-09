@@ -12,7 +12,7 @@ router.post("/create", isAuthenticated, restrictTo("HOST"),upload.array("images"
 router.get("/host/:hostId", isAuthenticated, PropertyController.getAllPropertiesByHost);
 router.get("/:id", isAuthenticated, PropertyController.getPropertyById);
 router.get("/", PropertyController.getAllProperties);
-router.patch("/:id", isAuthenticated, PropertyController.updateProperty);
+router.patch("/:id", isAuthenticated,upload.array("images"), PropertyController.updateProperty);
 router.delete("/:id", isAuthenticated, PropertyController.deleteProperty);
 
 const propertyRouter = router;

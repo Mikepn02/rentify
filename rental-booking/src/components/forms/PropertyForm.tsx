@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -11,6 +11,7 @@ import "react-phone-number-input/style.css";
 import { Button } from "../ui/button";
 import { FileUploader } from "../ui/FileUploader";
 import useProperties from "@/hooks/useProperties";
+import { Property } from "@/@types/types";
 
 const propertyTypeOptions = [
   { value: "apartment", label: "Apartment" },
@@ -26,43 +27,67 @@ const amenitiesOptions = [
   { value: "gym", label: "Gym" },
 ];
 
-const PropertyForm = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const { createProperty } = useProperties()
+type PropertyFormProps = {
+  action: "create" | "update";
+  property?: Property;
+  onSuccess?: () => void;
+};
 
+const PropertyForm = ({ action, property, onSuccess }: PropertyFormProps) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const { createProperty, updateProperty } = useProperties();
 
   const form = useForm<z.infer<typeof PropertyFormValidation>>({
     resolver: zodResolver(PropertyFormValidation),
     defaultValues: {
-      available: false,
+      title: property?.title || "",
+      location: property?.location || "",
+      price: property?.price || 0,
+      type: property?.type || "",
+      area: property?.area || 0,
+      bedrooms: property?.bedrooms || 0,
+      bathrooms: property?.bathrooms || 0,
+      description: property?.description || "",
+      amenities: property?.amenities || [],
+      available: property?.available || false,
+      // For update, leave the images as URLs (strings) rather than converting to empty Files.
+      images: property?.images || [],
     },
   });
+
+  // Optionally reset the form when the property changes (useful for editing)
+  useEffect(() => {
+    if (property && action === "update") {
+      form.reset({
+        ...property,
+        images: property.images || [],
+      });
+    }
+  }, [property, form, action]);
 
   const onSubmit = async (values: z.infer<typeof PropertyFormValidation>) => {
     setIsLoading(true);
     try {
-      console.log("Form Values:", values);
-      //@ts-expect-error
-      await createProperty(values);
+      if (action === "create") {
+        await createProperty(values);
+      } else if (action === "update" && property?.id) {
+        await updateProperty(property.id, values);
+      }
+      
+      if (onSuccess) onSuccess();
     } catch (error) {
       console.error("Error submitting form:", error);
     } finally {
       setIsLoading(false);
     }
   };
-  
-  console.log("Form Errors:", form.formState.errors);
-
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex-1 space-y-12"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 space-y-8">
         <section className="space-y-4">
           <p className="text-primary-light text-lg font-bold">
-            Create A Rental Property here
+            {action === "create" ? "Create A Rental Property" : "Update Property"}
           </p>
         </section>
 
@@ -91,22 +116,6 @@ const PropertyForm = () => {
         />
 
         <CustomFormField
-          fieldType={FormFieldType.INPUT}
-          control={form.control}
-          name="email"
-          label="Email"
-          placeholder="johndoe@gmail.com"
-        />
-
-        <CustomFormField
-          fieldType={FormFieldType.PHONE_INPUT}
-          control={form.control}
-          name="phone"
-          label="Phone number"
-          placeholder="(555) 123-4567"
-        />
-
-        <CustomFormField
           fieldType={FormFieldType.SELECT}
           control={form.control}
           name="type"
@@ -119,6 +128,7 @@ const PropertyForm = () => {
             </SelectItem>
           ))}
         </CustomFormField>
+
         <CustomFormField
           fieldType={FormFieldType.NUMBER_INPUT}
           control={form.control}
@@ -189,8 +199,16 @@ const PropertyForm = () => {
           label="Available for Rent"
         />
 
-        <Button type="submit" disabled={isLoading} className="w-full bg-primary-light hover:bg-primary-light">
-          {isLoading ? "Submitting..." : "Submit Property"}
+        <Button
+          type="submit"
+          disabled={isLoading}
+          className="w-full bg-primary-light hover:bg-primary-light"
+        >
+          {isLoading
+            ? "Submitting..."
+            : action === "create"
+            ? "Create Property"
+            : "Update Property"}
         </Button>
       </form>
     </Form>

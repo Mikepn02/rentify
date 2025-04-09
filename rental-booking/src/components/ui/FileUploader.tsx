@@ -2,14 +2,14 @@ import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 
 type FileUploaderProps = {
-  files: File[]; // Actual File objects now
-  onChange: (files: File[]) => void;
+  files: (File | string)[];  // Files can now be either File objects or URLs (strings)
+  onChange: (files: (File | string)[]) => void;
 };
 
 export const FileUploader = ({ files = [], onChange }: FileUploaderProps) => {
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
-      onChange([...files, ...acceptedFiles]); // Store actual File objects
+      onChange([...files, ...acceptedFiles]); // Append new files
     },
     [files, onChange]
   );
@@ -25,7 +25,7 @@ export const FileUploader = ({ files = [], onChange }: FileUploaderProps) => {
       {files.length > 0 ? (
         files.length === 1 ? (
           <img
-            src={URL.createObjectURL(files[0])}
+            src={typeof files[0] === "string" ? files[0] : URL.createObjectURL(files[0])}
             alt="uploaded"
             className="h-[400px] w-full rounded-md object-cover"
           />
@@ -34,7 +34,7 @@ export const FileUploader = ({ files = [], onChange }: FileUploaderProps) => {
             {files.map((file, index) => (
               <img
                 key={index}
-                src={URL.createObjectURL(file)}
+                src={typeof file === "string" ? file : URL.createObjectURL(file)}
                 alt={`uploaded image ${index + 1}`}
                 className="h-32 w-32 rounded-md object-cover"
               />
