@@ -31,9 +31,9 @@ const Booking = () => {
     cvc: "",
   });
 
-  const property = propertyId ? getPropertyById(propertyId) : undefined;
+  const [guests, setGuests] = useState(1); // State to store the number of guests
 
-  console.log("Property ID: ", property);
+  const property = propertyId ? getPropertyById(propertyId) : undefined;
 
   useEffect(() => {
     if (!user) {
@@ -46,6 +46,10 @@ const Booking = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleGuestChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setGuests(Number(e.target.value)); // Update the number of guests
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -62,7 +66,7 @@ const Booking = () => {
         propertyId: property.id,
         checkInDate: startDate.toISOString(),
         checkoutDate: endDate.toISOString(),
-        guests: 2,
+        guests: guests, // Use the guests number here
         totalAmount:
           property.price * bookingDuration +
           Math.round(property.price * bookingDuration * 0.12) +
@@ -71,8 +75,6 @@ const Booking = () => {
         expiryDate: formData.expiryDate,
         cvc: formData.cvc,
       };
-
-      console.log(newBooking);
 
       await createBooking({ ...newBooking, renterId: user.id });
     } catch (error) {
@@ -155,6 +157,24 @@ const Booking = () => {
                     </div>
                   </div>
 
+                  {/* Guests Info */}
+                  <div className="bg-white rounded-xl border p-6">
+                    <h2 className="text-xl font-medium mb-4">
+                      Number of Guests
+                    </h2>
+                    <div className="space-y-2">
+                      <Label htmlFor="guests">Guests</Label>
+                      <Input
+                        type="number"
+                        name="guests"
+                        value={guests}
+                        onChange={handleGuestChange}
+                        min={1} // Minimum number of guests
+                        required
+                      />
+                    </div>
+                  </div>
+
                   {/* Payment Info */}
                   <div className="bg-white rounded-xl border p-6">
                     <h2 className="text-xl font-medium mb-4 flex items-center gap-2">
@@ -199,10 +219,12 @@ const Booking = () => {
 
                   {user && user.role === "HOST" ? (
                     <h1 className="text-lg font-bold text-center text-red-500">Hosts are not allowed to book a property</h1>
-                  ):
-                  <Button type="submit" className="w-full py-6 text-lg">
-                  Confirm Booking
-                </Button>}
+                  ) : (
+                    <Button type="submit" className="w-full py-6 text-lg">
+                      Confirm Booking
+                    </Button>
+                  )}
+
                   <p className="text-sm text-muted-foreground text-center">
                     By confirming, you agree to our Terms of Service and Privacy Policy
                   </p>
@@ -225,8 +247,12 @@ const Booking = () => {
                     <Separator className="my-4" />
                     <div className="space-y-3">
                       <div className="flex justify-between text-sm">
-                        <span>${property.price} x {Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24))} nights</span>
-                        <span>${property.price * Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24))}</span>
+                        <span>
+                          ${property.price} x {Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24))} nights
+                        </span>
+                        <span>
+                          ${property.price * Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24))}
+                        </span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <span>Service fee</span>
@@ -239,7 +265,9 @@ const Booking = () => {
                       <Separator className="my-2" />
                       <div className="flex justify-between font-medium">
                         <span>Total</span>
-                        <span>${property.price * Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24)) + Math.round(property.price * 5 * 0.12) + Math.round(property.price * 5 * 0.08)}</span>
+                        <span>
+                          ${property.price * Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24)) + Math.round(property.price * 5 * 0.12) + Math.round(property.price * 5 * 0.08)}
+                        </span>
                       </div>
                     </div>
                   </div>
