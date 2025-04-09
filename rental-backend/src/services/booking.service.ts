@@ -12,19 +12,72 @@ export default class BookingService {
         },
       });
 
-      if (!property?.available) {
+      if (!property || !property?.available) {
         throw new Error("Property is not available");
       }
-      const totalAmount = property.price * bookProperty.guests;
+
+      const { checkInDate, checkoutDate } = bookProperty;
+
+      const overlappingBooking = await prisma.booking.findFirst({
+        where: {
+          propertyId: property.id,
+          status: { not: "CANCELED" },
+          OR: [
+            {
+              checkInDate: {
+                lte: new Date(checkoutDate),
+              },
+              checkoutDate: {
+                gte: new Date(checkInDate),
+              },
+            },
+          ],
+        },
+      });
+
+      if (overlappingBooking) {
+        throw new Error("Property is already booked for the selected dates");
+      }
+
+      const duplicateBooking = await prisma.booking.findFirst({
+        where: {
+          renterId,
+          propertyId: property.id,
+          status: { not: "CANCELED" },
+          OR: [
+            {
+              checkInDate: {
+                lte: new Date(checkoutDate),
+              },
+              checkoutDate: {
+                gte: new Date(checkInDate),
+              },
+            },
+          ],
+        },
+      });
+
+      if (duplicateBooking) {
+        throw new Error(
+          "You have already booked this property for overlapping dates"
+        );
+      }
+
+      const checkIn = new Date(bookProperty.checkInDate);
+      const checkOut = new Date(bookProperty.checkoutDate);
+      const timeDiff = checkOut.getTime() - checkIn.getTime();
+      const nights = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+
+      const totalAmount = nights * property.price;
 
       const booking = await prisma.booking.create({
         data: {
-          renterId: renterId,
-          propertyId: bookProperty.propertyId,
+          renterId,
+          propertyId: property.id,
           checkInDate: bookProperty.checkInDate,
           checkoutDate: bookProperty.checkoutDate,
           guests: bookProperty.guests,
-          totalAmount: totalAmount,
+          totalAmount,
           status: "PENDING",
         },
       });
@@ -32,6 +85,7 @@ export default class BookingService {
       return booking;
     } catch (error: any) {
       console.error("Error while booking property: ", error);
+      throw error;
     }
   };
 
@@ -46,6 +100,7 @@ export default class BookingService {
       return booking;
     } catch (error: any) {
       console.error("Error while finding booking: ", error?.message);
+      throw error;
     }
   };
 
@@ -73,6 +128,7 @@ export default class BookingService {
       return booking;
     } catch (error: any) {
       console.error("Error while finding booking: ", error?.message);
+      throw error;
     }
   };
 
@@ -92,11 +148,12 @@ export default class BookingService {
       return booking;
     } catch (error: any) {
       console.error("Error while updating status: ", error?.message);
+      throw error;
     }
   };
 
   public static getBookingByHost = async (hostId: string) => {
-    try{
+    try {
       const bookings = await prisma.booking.findMany({
         where: {
           property: {
@@ -109,27 +166,28 @@ export default class BookingService {
         },
       });
       return bookings;
-    }catch(error: any){
+    } catch (error: any) {
       console.error("Error while finding booking: ", error?.message);
-
+      throw error;
     }
-  }
+  };
 
-  public static getBookingByProperty = async(propertyId: string) => {
-     try{
+  public static getBookingByProperty = async (propertyId: string) => {
+    try {
       const bookings = await prisma.booking.findMany({
         where: {
-          propertyId
+          propertyId,
         },
         include: {
-          renter: true
-        }
-      })
+          renter: true,
+        },
+      });
       return bookings;
-     }catch(error: any){
+    } catch (error: any) {
       console.error("Error while finding booking: ", error?.message);
-     }
-  }
+      throw error;
+    }
+  };
 
   public static getBookingsByStatus = async (
     userId: string,
@@ -148,18 +206,19 @@ export default class BookingService {
       return bookings;
     } catch (error: any) {
       console.error("Error fetching bookings by status: ", error.message);
+      throw error;
     }
   };
 
-  public static confirmBooking = async(bookingId: string) => {
+  public static confirmBooking = async (bookingId: string) => {
     return this.updateBookingStatus(bookingId, "CONFIRMED");
-  }
+  };
 
-  public static cancelBooking = async(bookingId: string) => {
+  public static cancelBooking = async (bookingId: string) => {
     return this.updateBookingStatus(bookingId, "CANCELED");
-  }
+  };
 
-  public static deleteBooking = async(bookingId: string) => {
+  public static deleteBooking = async (bookingId: string) => {
     try {
       const booking = await prisma.booking.delete({
         where: {
@@ -170,8 +229,8 @@ export default class BookingService {
     } catch (error: any) {
       console.error("Error while deleting booking: ", error?.message);
     }
-  }
-  public static getAllBookings = async() => {
+  };
+  public static getAllBookings = async () => {
     try {
       const bookings = await prisma.booking.findMany({
         include: {
@@ -183,11 +242,15 @@ export default class BookingService {
     } catch (error: any) {
       console.error("Error while fetching all bookings: ", error?.message);
     }
-  }
+  };
 
-  public static checkAvailability = async (propertyId: string, checkInDate: Date, checkOutDate: Date) => {
-    try{
-       const overlapping = await prisma.booking.findFirst({
+  public static checkAvailability = async (
+    propertyId: string,
+    checkInDate: Date,
+    checkOutDate: Date
+  ) => {
+    try {
+      const overlapping = await prisma.booking.findFirst({
         where: {
           propertyId,
           OR: [
@@ -208,12 +271,12 @@ export default class BookingService {
               },
             },
           ],
-        }
-       })
+        },
+      });
 
-       return !overlapping;
-    }catch(error: any){
+      return !overlapping;
+    } catch (error: any) {
       console.error("Error while checking availability: ", error?.message);
     }
-  }
+  };
 }

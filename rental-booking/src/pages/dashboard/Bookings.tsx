@@ -4,7 +4,7 @@ import useBooking from "@/hooks/useBooking";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, MoreHorizontal, CheckCircle, XCircle } from "lucide-react";
+import { CalendarIcon, MoreHorizontal, CheckCircle, XCircle} from "lucide-react";
 import ConfirmModal from "@/components/modal/ConfirmModal";
 
 import { Booking } from "@/lib/data";
@@ -15,6 +15,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import useAuth from "@/hooks/useAuth";
 
 const BookingStatusBadge = ({ status }: { status: string }) => {
   const statusStyles = {
@@ -32,7 +33,9 @@ const BookingStatusBadge = ({ status }: { status: string }) => {
   );
 };
 
+
 export default function Bookings() {
+  const { user } = useAuth();
   const { bookings, isLoading, confirmBooking, cancelBooking } = useBooking();
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
   const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
@@ -138,6 +141,7 @@ export default function Bookings() {
         const isPending = booking.status === "PENDING";
         const isConfirmed = booking.status === "CONFIRMED";
         const isCancelled = booking.status === "CANCELLED";
+
         
         return (
           <DropdownMenu>
@@ -150,7 +154,7 @@ export default function Bookings() {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               
-              {isPending && (
+              {user?.role === "HOST" &&isPending && (
                 <ConfirmModal
                   title="Confirm Booking"
                   description={`Are you sure you want to confirm booking for "${booking.property.title}"?`}

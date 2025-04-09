@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "@/lib/axios.config";
 import { Booking, BookingStatus } from "@/lib/data";
 import { useState, useEffect } from "react";
@@ -88,14 +90,13 @@ export default function useBooking() {
           color: "red",
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      toast({
-        title: "Error",
-        description: "An error occurred while creating the booking.",
-        open: true,
-        onOpenChange: () => {},
-      });
+      notifications.show({
+              title: "Error",
+              message: error.response?.data?.message ?? "An error occured",
+              color: "red",
+            });
     } finally {
       setBookingProperty(false);
     }
@@ -156,11 +157,10 @@ export default function useBooking() {
     try {
       const { data } = await axios.patch(`/booking/${id}/confirm`);
       if (data.success) {
-        toast({
-          title: "Booking confirmed",
-          description: "The booking has been confirmed successfully.",
-          open: true,
-          onOpenChange: () => {},
+        notifications.show({
+          title: "Success",
+          message: "Booking confirmed successfully",
+          color: "green",
         });
         mutate();
       }
@@ -179,11 +179,10 @@ export default function useBooking() {
     try {
       const { data } = await axios.patch(`/booking/${id}/cancel`);
       if (data.success) {
-        toast({
-          title: "Booking cancelled",
-          description: "The booking has been cancelled successfully.",
-          open: true,
-          onOpenChange: () => {},
+        notifications.show({
+          title: "Success",
+          message: "Booking cancelled successfully",
+          color: "green",
         });
         mutate();
       }
