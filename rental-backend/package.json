@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/server.ts --ignore \"*.json\"",
-    "build": "tsc",
+    "dev": "node init && nodemon src/server.ts --ignore \"*.json\"",
+    "build": "node init && tsc",
     "generate": "prisma generate",
     "swagger": "ts-node src/swagger.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
