@@ -13,7 +13,7 @@ import useAuth from "@/hooks/useAuth";
 const PropertyDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user } = useAuth()
+  const { user } = useAuth();
   const { getPropertyById } = useProperties();
   const [currentImage, setCurrentImage] = useState(0);
   const [selectedDates, setSelectedDates] = useState<{
@@ -272,73 +272,82 @@ const PropertyDetail = () => {
                 {/* Right Column - Booking Form */}
                 {user?.role !== "HOST" && (
                   <div className="lg:col-span-1">
-                  <div className="bg-white rounded-xl border shadow-sm p-6 sticky top-24">
-                    <div className="flex items-center justify-between mb-6">
-                      <div>
-                        <span className="text-2xl font-medium">
-                          ${property.price}
-                        </span>
-                        <span className="text-muted-foreground"> / night</span>
+                    <div className="bg-white rounded-xl border shadow-sm p-6 sticky top-24">
+                      <div className="flex items-center justify-between mb-6">
+                        <div>
+                          <span className="text-2xl font-medium">
+                            ${property.price}
+                          </span>
+                          <span className="text-muted-foreground">
+                            {" "}
+                            / night
+                          </span>
+                        </div>
+                        <Badge
+                          variant="outline"
+                          className="flex items-center gap-1"
+                        >
+                          <Calendar className="w-3.5 h-3.5" />
+                          <span>Available</span>
+                        </Badge>
                       </div>
-                      <Badge
-                        variant="outline"
-                        className="flex items-center gap-1"
-                      >
-                        <Calendar className="w-3.5 h-3.5" />
-                        <span>Available</span>
-                      </Badge>
-                    </div>
 
-                    <div className="mb-6">
-                      <h3 className="text-sm font-medium mb-3">Dates</h3>
-                      <BookingCalendar
-                        bookings={bookings}
-                        onDateSelect={handleDateSelect}
-                      />
-                    </div>
-
-                    {selectedDates.nights > 0 && (
-                      <div className="border-t pt-4 mb-6">
-                        <div className="flex justify-between mb-2">
-                          <span>
-                            ${property.price} x {selectedDates.nights} nights
-                          </span>
-                          <span>${selectedDates.totalPrice}</span>
-                        </div>
-                        <div className="flex justify-between mb-2">
-                          <span>Service fee</span>
-                          <span>
-                            ${Math.round(selectedDates.totalPrice * 0.12)}
-                          </span>
-                        </div>
-                        <div className="flex justify-between font-medium pt-3 border-t mt-3">
-                          <span>Total</span>
-                          <span>
-                            $
-                            {selectedDates.totalPrice +
-                              Math.round(selectedDates.totalPrice * 0.12)}
-                          </span>
-                        </div>
+                      <div className="mb-6">
+                        <h3 className="text-sm font-medium mb-3">Dates</h3>
+                        <BookingCalendar
+                          bookings={bookings}
+                          onDateSelect={handleDateSelect}
+                        />
                       </div>
-                    )}
 
-                    <Link
-                      to={`/booking?property=${
-                        property.id
-                      }&startDate=${selectedDates.startDate?.toISOString()}&endDate=${selectedDates.endDate?.toISOString()}`}
-                    >
-                      <Button className="w-full">
-                        {selectedDates.nights > 0
-                          ? "Reserve"
-                          : "Check Availability"}
-                      </Button>
-                    </Link>
+                      {selectedDates.nights > 0 && (
+                        <div className="border-t pt-4 mb-6">
+                          <div className="flex justify-between mb-2">
+                            <span>
+                              ${property.price} x {selectedDates.nights} nights
+                            </span>
+                            <span>${selectedDates.totalPrice}</span>
+                          </div>
+                          <div className="flex justify-between mb-2">
+                            <span>Service fee</span>
+                            <span>
+                              ${Math.round(selectedDates.totalPrice * 0.12)}
+                            </span>
+                          </div>
+                          <div className="flex justify-between font-medium pt-3 border-t mt-3">
+                            <span>Total</span>
+                            <span>
+                              $
+                              {selectedDates.totalPrice +
+                                Math.round(selectedDates.totalPrice * 0.12)}
+                            </span>
+                          </div>
+                        </div>
+                      )}
 
-                    <p className="text-xs text-center text-muted-foreground mt-4">
-                      You won't be charged yet
-                    </p>
+                      {selectedDates.startDate && selectedDates.endDate ? (
+                        <Link
+                          to={`/booking?property=${
+                            property.id
+                          }&startDate=${selectedDates.startDate.toISOString()}&endDate=${selectedDates.endDate.toISOString()}`}
+                        >
+                          <Button className="w-full">
+                            {selectedDates.nights > 0
+                              ? "Reserve"
+                              : "Check Availability"}
+                          </Button>
+                        </Link>
+                      ) : (
+                        <Button className="w-full" disabled>
+                          Select Check-in & Check-out Dates
+                        </Button>
+                      )}
+
+                      <p className="text-xs text-center text-muted-foreground mt-4">
+                        You won't be charged yet
+                      </p>
+                    </div>
                   </div>
-                </div>
                 )}
               </div>
 

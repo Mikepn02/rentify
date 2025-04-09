@@ -20,7 +20,7 @@ export default class BookingController {
       });
     } catch (error: any) {
       res.status(500).json({
-        message: "Internal server error",
+        message: error?.message,
       });
     }
   };
