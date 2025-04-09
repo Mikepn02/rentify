@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/server.ts --ignore \"*.json\"",
+    "dev": "node api.js && nodemon src/server.ts --ignore \"*.json\"",
     "build": "tsc",
     "generate": "prisma generate",
     "swagger": "ts-node src/swagger.ts",
